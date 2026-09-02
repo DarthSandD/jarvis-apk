@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\USER\jarvis-apk\app\src\main\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\USER\jarvis-apk\app\src\main\res"><file name="bg_button_primary" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_button_primary.xml" qualifiers="" type="drawable"/><file name="bg_button_secondary" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_button_secondary.xml" qualifiers="" type="drawable"/><file name="bg_card" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_card.xml" qualifiers="" type="drawable"/><file name="bg_chat_assistant" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_chat_assistant.xml" qualifiers="" type="drawable"/><file name="bg_chat_user" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_chat_user.xml" qualifiers="" type="drawable"/><file name="bg_edittext" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_edittext.xml" qualifiers="" type="drawable"/><file name="bg_icon_button" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_icon_button.xml" qualifiers="" type="drawable"/><file name="bg_voice_active" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_voice_active.xml" qualifiers="" type="drawable"/><file name="bg_voice_inactive" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_voice_inactive.xml" qualifiers="" type="drawable"/><file name="ic_chevron_right" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_chevron_right.xml" qualifiers="" type="drawable"/><file name="ic_delete" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_delete.xml" qualifiers="" type="drawable"/><file name="ic_launcher_foreground" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_launcher_foreground.xml" qualifiers="" type="drawable"/><file name="ic_mic" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_mic.xml" qualifiers="" type="drawable"/><file name="ic_mic_active" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_mic_active.xml" qualifiers="" type="drawable"/><file name="ic_send" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_send.xml" qualifiers="" type="drawable"/><file name="ic_settings" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_settings.xml" qualifiers="" type="drawable"/><file name="ic_status_offline" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_status_offline.xml" qualifiers="" type="drawable"/><file name="ic_status_online" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_status_online.xml" qualifiers="" type="drawable"/><file name="activity_main" path="C:\Users\USER\jarvis-apk\app\src\main\res\layout\activity_main.xml" qualifiers="" type="layout"/><file name="activity_settings" path="C:\Users\USER\jarvis-apk\app\src\main\res\layout\activity_settings.xml" qualifiers="" type="layout"/><file name="dialog_slider" path="C:\Users\USER\jarvis-apk\app\src\main\res\layout\dialog_slider.xml" qualifiers="" type="layout"/><file name="dialog_text_input" path="C:\Users\USER\jarvis-apk\app\src\main\res\layout\dialog_text_input.xml" qualifiers="" type="layout"/><file name="main_menu" path="C:\Users\USER\jarvis-apk\app\src\main\res\menu\main_menu.xml" qualifiers="" type="menu"/><file name="ic_launcher" path="C:\Users\USER\jarvis-apk\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml" qualifiers="anydpi-v26" type="mipmap"/><file name="ic_launcher_round" path="C:\Users\USER\jarvis-apk\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml" qualifiers="anydpi-v26" type="mipmap"/><file path="C:\Users\USER\jarvis-apk\app\src\main\res\values\colors.xml" qualifiers=""><color name="jarvis_surface">#0C1220</color><color name="jarvis_surface_elevated">#141D2E</color><color name="jarvis_input_background">#141D2E</color><color name="jarvis_divider">#152030</color><color name="jarvis_text_primary">#ECF2FF</color><color name="jarvis_text_secondary">#7B8FA8</color><color name="jarvis_accent">#00E5FF</color><color name="jarvis_voice_active">#00E5FF</color><color name="jarvis_voice_inactive">#1E2C45</color><color name="jarvis_indicator_online">#00E676</color><color name="jarvis_indicator_offline">#FFD600</color><color name="jarvis_indicator_unknown">#4A5E78</color><color name="jarvis_icon_tint">#5B7090</color><color name="jarvis_window_background">#060A13</color><color name="jarvis_chat_user_bubble">#1E2C45</color><color name="jarvis_chat_assistant_bubble">#0F1B2D</color><color name="jarvis_accent_danger">#FF4444</color><color name="jarvis_accent_secondary">#FFD600</color><color name="jarvis_send_button">#00E5FF</color><color name="black">#FF000000</color><color name="white">#FFFFFFFF</color><color name="jarvis_black">#FF000000</color><color name="jarvis_white">#FFFFFFFF</color><color name="jarvis_gray">#4A5E78</color><color name="jarvis_green">#00E676</color><color name="jarvis_orange">#FFD600</color><color name="jarvis_shimmer">#1E2C45</color><color name="jarvis_voice_ring">#00E5FF</color><color name="jarvis_icon_accent">#00E5FF</color><color name="jarvis_glass">#33FFFFFF</color><color name="jarvis_glass_border">#0DFFFFFF</color><color name="jarvis_glass_dark">#66000000</color><color name="jarvis_surface_overlay">#1A2740</color><color name="jarvis_text_hint">#4A5E78</color><color name="jarvis_accent_dim">#009DB3</color><color name="jarvis_avatar_assistant">#001A33</color><color name="jarvis_chat_time">#5B7090</color><color name="jarvis_input_border">#2A3D5C</color><color name="jarvis_accent_success">#00E676</color><color name="jarvis_avatar_user">#1A3A5C</color></file><file path="C:\Users\USER\jarvis-apk\app\src\main\res\values\dimens.xml" qualifiers=""><dimen name="text_title">20sp</dimen><dimen name="text_headline">24sp</dimen><dimen name="text_body">16sp</dimen><dimen name="text_caption">12sp</dimen><dimen name="text_chat">15sp</dimen><dimen name="divider_height">0.5dp</dimen><dimen name="toolbar_height">56dp</dimen><dimen name="voice_wave_width">3dp</dimen><dimen name="voice_wave_max">28dp</dimen><dimen name="corner_sm">12dp</dimen><dimen name="text_display">32sp</dimen><dimen name="corner_md">16dp</dimen><dimen name="btn_height_sm">36dp</dimen><dimen name="chat_padding_vertical">10dp</dimen><dimen name="chat_padding_horizontal">14dp</dimen><dimen name="text_label">14sp</dimen><dimen name="spacing_md">16dp</dimen><dimen name="corner_pill">50dp</dimen><dimen name="spacing_sm">8dp</dimen><dimen name="margin_screen">16dp</dimen><dimen name="btn_height_md">48dp</dimen><dimen name="icon_size_lg">32dp</dimen><dimen name="corner_xs">8dp</dimen><dimen name="corner_lg">24dp</dimen><dimen name="icon_size_md">24dp</dimen><dimen name="chat_group_spacing">12dp</dimen><dimen name="spacing_2xl">48dp</dimen><dimen name="chat_bubble_max">280dp</dimen><dimen name="spacing_xl">32dp</dimen><dimen name="input_height">52dp</dimen><dimen name="spacing_2xs">2dp</dimen><dimen name="spacing_xs">4dp</dimen><dimen name="spacing_lg">24dp</dimen><dimen name="text_chat_time">11sp</dimen><dimen name="avatar_size">32dp</dimen><dimen name="chat_spacing">4dp</dimen><dimen name="icon_size_sm">18dp</dimen><dimen name="voice_wave_min">6dp</dimen><dimen name="chat_bubble_min">48dp</dimen><dimen name="spacing_xlarge">32dp</dimen><dimen name="spacing_small">8dp</dimen><dimen name="spacing_large">24dp</dimen><dimen name="spacing_tiny">4dp</dimen><dimen name="spacing_medium">16dp</dimen></file><file path="C:\Users\USER\jarvis-apk\app\src\main\res\values\strings.xml" qualifiers=""><string name="app_name">JARVIS</string><string name="welcome_online">✓ Connected to Hermes AI. I\'m ready. Ask me anything.</string><string name="welcome_offline">⚡ Running offline mode. I have local intelligence. Connect to the internet to unlock full Hermes AI.</string><string name="connecting">Connecting…</string><string name="mode_online">Online • Hermes AI</string><string name="mode_offline">Offline • Local AI</string><string name="mode_unknown">Connecting…</string><string name="hint_message">Type a message…</string><string name="btn_send">Send</string><string name="btn_voice">Voice</string><string name="btn_settings">Settings</string><string name="thinking">JARVIS: Thinking…</string><string name="voice_listening">Listening…</string><string name="voice_not_listening">Tap to speak</string><string name="hint_initial">JARVIS initialized. Connecting to Hermes…</string><string name="error_connection">JARVIS: Connection failed. Please check your network.</string><string name="permission_microphone_title">Microphone Access</string><string name="permission_microphone_message">JARVIS needs microphone access for voice commands.</string><string name="permission_notification_title">Notifications</string><string name="permission_notification_message">JARVIS uses notifications for reminders and alerts.</string><string name="settings_title">Settings</string><string name="settings_online_mode">Online Mode</string><string name="settings_server_ip">Hermes Server IP</string><string name="settings_server_port">Server Port</string><string name="settings_tts_speed">Speech Speed</string><string name="settings_tts_pitch">Speech Pitch</string><string name="settings_about">About JARVIS</string><string name="settings_about_text">JARVIS v1.0.0 — Your personal AI assistant. Dual-mode: online via Hermes OmniRoute or offline with local intelligence. Built for S23 Ultra.</string><string name="settings_dark_theme">Dark Theme</string><string name="settings_voice_commands">Voice Commands</string><string name="settings_clear_chat">Clear Chat</string><string name="settings_clear_chat_confirm">Clear all messages?</string><string name="settings_section_connection">Connection</string><string name="settings_section_voice">Voice &amp; Speech</string><string name="settings_section_display">Display</string><string name="settings_section_voice_commands">Voice Commands</string><string name="settings_section_chat">Chat</string><string name="settings_section_about">About</string><string name="settings_description">Your personal AI assistant with dual-mode: online via Hermes OmniRoute or offline with local intelligence. Built for S23 Ultra.</string><string name="settings_grayscale">Grayscale Theme</string><string name="input_http_hint">http://</string><string name="ok">OK</string><string name="cancel">Cancel</string><string name="save">Save</string><string name="enabled">Enabled</string><string name="disabled">Disabled</string><string name="settings_reset">Settings reset</string><string name="settings_saved">Settings saved</string></file><file path="C:\Users\USER\jarvis-apk\app\src\main\res\values\themes.xml" qualifiers=""><style name="Theme.JARVIS" parent="Theme.Material3.Dark.NoActionBar">
+        
+        <item name="colorPrimary">@color/jarvis_accent</item>
+        <item name="colorOnPrimary">@color/jarvis_window_background</item>
+        <item name="colorPrimaryContainer">@color/jarvis_surface_elevated</item>
+        <item name="colorOnPrimaryContainer">@color/jarvis_text_primary</item>
+
+        
+        <item name="colorSecondary">@color/jarvis_accent_secondary</item>
+        <item name="colorOnSecondary">@color/jarvis_window_background</item>
+
+        
+        <item name="colorSurface">@color/jarvis_surface</item>
+        <item name="colorOnSurface">@color/jarvis_text_primary</item>
+        <item name="colorSurfaceVariant">@color/jarvis_surface_elevated</item>
+        <item name="colorOnSurfaceVariant">@color/jarvis_text_secondary</item>
+
+        
+        <item name="android:colorBackground">@color/jarvis_window_background</item>
+        <item name="colorOnBackground">@color/jarvis_text_primary</item>
+
+        
+        <item name="colorError">@color/jarvis_accent_danger</item>
+        <item name="colorOnError">@color/jarvis_white</item>
+
+        
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowBackground">@color/jarvis_window_background</item>
+
+        
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.JARVIS.Display</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.JARVIS.Headline</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.JARVIS.Title</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.JARVIS.Body</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.JARVIS.Label</item>
+    </style><style name="JARVIS.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/bg_edittext</item>
+        <item name="android:textColor">@color/jarvis_text_primary</item>
+        <item name="android:textColorHint">@color/jarvis_text_hint</item>
+        <item name="android:textSize">@dimen/text_chat</item>
+        <item name="android:paddingStart">@dimen/spacing_md</item>
+        <item name="android:paddingEnd">@dimen/spacing_md</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style><style name="JARVIS.ChatBubble.User" parent="">
+        <item name="android:background">@drawable/bg_chat_user</item>
+        <item name="android:paddingTop">@dimen/chat_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/chat_padding_vertical</item>
+        <item name="android:paddingStart">@dimen/chat_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/chat_padding_horizontal</item>
+        <item name="android:maxWidth">@dimen/chat_bubble_max</item>
+    </style><style name="JARVIS.ChatBubble.Assistant" parent="">
+        <item name="android:background">@drawable/bg_chat_assistant</item>
+        <item name="android:paddingTop">@dimen/chat_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/chat_padding_vertical</item>
+        <item name="android:paddingStart">@dimen/chat_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/chat_padding_horizontal</item>
+        <item name="android:maxWidth">@dimen/chat_bubble_max</item>
+    </style><style name="JARVIS.IconButton" parent="">
+        <item name="android:background">@drawable/bg_icon_button</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:minWidth">40dp</item>
+        <item name="android:minHeight">40dp</item>
+    </style><style name="JARVIS.Card" parent="">
+        <item name="android:background">@drawable/bg_card</item>
+        <item name="android:padding">@dimen/spacing_md</item>
+    </style><style name="JARVIS.Button.Settings" parent="Widget.Material3.Button.TextButton">
+        <item name="android:backgroundTint">@android:color/transparent</item>
+        <item name="iconTint">@color/jarvis_icon_tint</item>
+        <item name="android:minHeight">@dimen/btn_height_md</item>
+        <item name="android:minWidth">@dimen/btn_height_md</item>
+    </style><style name="JARVIS.ChatBubble.System" parent="">
+        <item name="android:background">@drawable/bg_chat_assistant</item>
+        <item name="android:paddingTop">@dimen/chat_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/chat_padding_vertical</item>
+        <item name="android:paddingStart">@dimen/chat_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/chat_padding_horizontal</item>
+        <item name="android:maxWidth">@dimen/chat_bubble_max</item>
+    </style><style name="TextAppearance.JARVIS.Headline" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">@dimen/text_headline</item>
+        <item name="android:textColor">@color/jarvis_text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style><style name="TextAppearance.JARVIS.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textColor">@color/jarvis_text_primary</item>
+    </style><style name="JARVIS.AppTitle" parent="">
+        <item name="android:textColor">@color/jarvis_accent</item>
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textAllCaps">true</item>
+    </style><style name="TextAppearance.JARVIS.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textColor">@color/jarvis_text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style><style name="TextAppearance.JARVIS.Display" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:textSize">@dimen/text_display</item>
+        <item name="android:textColor">@color/jarvis_text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style><style name="JARVIS.Button.Mic" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/jarvis_voice_inactive</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">@dimen/corner_pill</item>
+        <item name="iconTint">@color/jarvis_icon_tint</item>
+        <item name="android:minHeight">@dimen/btn_height_md</item>
+        <item name="android:minWidth">@dimen/btn_height_md</item>
+    </style><style name="JARVIS.Button.Send" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/jarvis_accent</item>
+        <item name="android:textColor">@color/jarvis_window_background</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">@dimen/corner_pill</item>
+        <item name="iconTint">@color/jarvis_window_background</item>
+        <item name="android:minHeight">@dimen/btn_height_md</item>
+        <item name="android:minWidth">@dimen/btn_height_md</item>
+    </style><style name="TextAppearance.JARVIS.Label" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/text_label</item>
+        <item name="android:textColor">@color/jarvis_text_secondary</item>
+    </style></file><file name="file_paths" path="C:\Users\USER\jarvis-apk\app\src\main\res\xml\file_paths.xml" qualifiers="" type="xml"/><file name="item_chat_message" path="C:\Users\USER\jarvis-apk\app\src\main\res\layout\item_chat_message.xml" qualifiers="" type="layout"/><file name="bg_shimmer" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\bg_shimmer.xml" qualifiers="" type="drawable"/><file name="ic_chevron_left" path="C:\Users\USER\jarvis-apk\app\src\main\res\drawable\ic_chevron_left.xml" qualifiers="" type="drawable"/></source></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\USER\jarvis-apk\app\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\USER\jarvis-apk\app\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\USER\jarvis-apk\app\build\generated\res\resValues\debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\USER\jarvis-apk\app\build\generated\res\resValues\debug"/></dataSet><mergedItems/></merger>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="JARVIS" default="help">
+    <property name="sdk.dir" value="${env.ANDROID_HOME}" />
+    <property name="platform" value="android-34" />
+    <import file="custom_rules.xml" optional="true" />
+    <import file="${sdk.dir}/tools/ant/build.xml" />
+</project>

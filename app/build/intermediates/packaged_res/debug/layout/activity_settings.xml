@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/jarvis_window_background"
+    android:fitsSystemWindows="true">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/jarvis_surface"
+        app:title="Settings"
+        app:titleTextColor="@color/jarvis_text_primary"
+        app:navigationIcon="@drawable/ic_chevron_left"
+        app:navigationIconTint="@color/jarvis_accent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/jarvis_divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <!-- Server Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connection"
+                android:textColor="@color/jarvis_accent"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Server IP"
+                android:textColor="@color/jarvis_text_secondary"
+                android:textSize="@dimen/text_label"
+                android:layout_marginBottom="@dimen/spacing_xs" />
+
+            <EditText
+                android:id="@+id/setting_server_ip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height_md"
+                android:background="@drawable/bg_edittext"
+                android:hint="10.212.104.140"
+                android:inputType="text"
+                android:textColor="@color/jarvis_text_primary"
+                android:textColorHint="@color/jarvis_text_hint"
+                android:textSize="@dimen/text_label"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Server Port"
+                android:textColor="@color/jarvis_text_secondary"
+                android:textSize="@dimen/text_label"
+                android:layout_marginBottom="@dimen/spacing_xs" />
+
+            <EditText
+                android:id="@+id/setting_server_port"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height_md"
+                android:background="@drawable/bg_edittext"
+                android:hint="20128"
+                android:inputType="number"
+                android:textColor="@color/jarvis_text_primary"
+                android:textColorHint="@color/jarvis_text_hint"
+                android:textSize="@dimen/text_label"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_lg" />
+
+            <!-- Voice Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Voice"
+                android:textColor="@color/jarvis_accent"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Voice Mode"
+                android:textColor="@color/jarvis_text_secondary"
+                android:textSize="@dimen/text_label"
+                android:layout_marginBottom="@dimen/spacing_xs" />
+
+            <EditText
+                android:id="@+id/setting_voice_mode"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height_md"
+                android:background="@drawable/bg_edittext"
+                android:hint="continuous"
+                android:inputType="text"
+                android:textColor="@color/jarvis_text_primary"
+                android:textColorHint="@color/jarvis_text_hint"
+                android:textSize="@dimen/text_label"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Voice Language"
+                android:textColor="@color/jarvis_text_secondary"
+                android:textSize="@dimen/text_label"
+                android:layout_marginBottom="@dimen/spacing_xs" />
+
+            <EditText
+                android:id="@+id/setting_voice_language"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height_md"
+                android:background="@drawable/bg_edittext"
+                android:hint="en-US"
+                android:inputType="text"
+                android:textColor="@color/jarvis_text_primary"
+                android:textColorHint="@color/jarvis_text_hint"
+                android:textSize="@dimen/text_label"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Voice Timeout (ms)"
+                android:textColor="@color/jarvis_text_secondary"
+                android:textSize="@dimen/text_label"
+                android:layout_marginBottom="@dimen/spacing_xs" />
+
+            <EditText
+                android:id="@+id/setting_voice_timeout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height_md"
+                android:background="@drawable/bg_edittext"
+                android:hint="5000"
+                android:inputType="number"
+                android:textColor="@color/jarvis_text_primary"
+                android:textColorHint="@color/jarvis_text_hint"
+                android:textSize="@dimen/text_label"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sample Rate"
+                android:textColor="@color/jarvis_text_secondary"
+                android:textSize="@dimen/text_label"
+                android:layout_marginBottom="@dimen/spacing_xs" />
+
+            <EditText
+                android:id="@+id/setting_sample_rate"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_height_md"
+                android:background="@drawable/bg_edittext"
+                android:hint="16000"
+                android:inputType="number"
+                android:textColor="@color/jarvis_text_primary"
+                android:textColorHint="@color/jarvis_text_hint"
+                android:textSize="@dimen/text_label"
+                android:paddingHorizontal="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_lg" />
+
+            <!-- Preferences Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preferences"
+                android:textColor="@color/jarvis_accent"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_sm">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Auto Connect"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textSize="@dimen/text_label" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/setting_auto_connect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/jarvis_accent"
+                    android:trackTint="@color/jarvis_divider" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Notifications"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textSize="@dimen/text_label" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/setting_notification_enabled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/jarvis_accent"
+                    android:trackTint="@color/jarvis_divider" />
+            </LinearLayout>
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btn_reset"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/btn_height_md"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/spacing_sm"
+                    android:background="@drawable/bg_button_secondary"
+                    android:textColor="@color/jarvis_accent"
+                    android:text="Reset" />
+
+                <Button
+                    android:id="@+id/btn_save"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/btn_height_md"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:background="@drawable/bg_button_primary"
+                    android:textColor="@color/jarvis_window_background"
+                    android:text="Save" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

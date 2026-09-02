@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/jarvis_window_background"
+    android:fitsSystemWindows="false">
+
+    <!-- Edge-to-edge content container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Top Bar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/toolbar_height"
+            android:background="@color/jarvis_surface"
+            app:contentInsetStart="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="@dimen/spacing_md">
+
+                <!-- Status dot + App title -->
+                <LinearLayout
+                    android:id="@+id/title_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <View
+                        android:id="@+id/view_status_dot"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_voice_active"
+                        android:backgroundTint="@color/jarvis_indicator_unknown" />
+
+                    <TextView
+                        android:id="@+id/txt_app_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:text="J.A.R.V.I.S."
+                        style="@style/JARVIS.AppTitle" />
+                </LinearLayout>
+
+                <!-- Connection status -->
+                <TextView
+                    android:id="@+id/txt_mode_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:text="Connecting..."
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption"
+                    app:layout_constraintTop_toTopOf="@id/title_group"
+                    app:layout_constraintBottom_toBottomOf="@id/title_group"
+                    app:layout_constraintStart_toEndOf="@id/title_group" />
+
+                <!-- Settings button -->
+                <ImageButton
+                    android:id="@+id/btn_settings_top"
+                    android:layout_width="@dimen/btn_height_md"
+                    android:layout_height="@dimen/btn_height_md"
+                    android:background="@drawable/bg_icon_button"
+                    android:src="@drawable/ic_settings"
+                    android:scaleType="centerInside"
+                    android:padding="@dimen/spacing_sm"
+                    android:contentDescription="Settings"
+                    app:tint="@color/jarvis_icon_tint"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- Toolbar divider -->
+        <View
+            android:id="@+id/toolbar_divider"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/jarvis_divider"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Chat List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_chat"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingBottom="@dimen/spacing_sm"
+            android:scrollbars="vertical"
+            android:overScrollMode="never"
+            android:scrollbarStyle="outsideOverlay"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_divider"
+            app:layout_constraintBottom_toTopOf="@id/layout_voice_waves"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:listitem="@layout/item_chat_message" />
+
+        <!-- Empty state (shown when no messages) -->
+        <LinearLayout
+            android:id="@+id/empty_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_divider"
+            app:layout_constraintBottom_toTopOf="@id/layout_input"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <View
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/bg_voice_active"
+                android:backgroundTint="@color/jarvis_accent_dim"
+                android:alpha="0.3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="JARVIS Ready"
+                android:textColor="@color/jarvis_text_primary"
+                android:textSize="@dimen/text_headline"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="Ask me anything. I'm listening."
+                android:textColor="@color/jarvis_text_secondary"
+                android:textSize="@dimen/text_body" />
+        </LinearLayout>
+
+        <!-- Voice Wave Indicator -->
+        <LinearLayout
+            android:id="@+id/layout_voice_waves"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/layout_input"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <View
+                android:id="@+id/voice_wave_1"
+                android:layout_width="@dimen/voice_wave_width"
+                android:layout_height="@dimen/voice_wave_min"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/bg_voice_active"
+                android:backgroundTint="@color/jarvis_voice_active" />
+
+            <View
+                android:id="@+id/voice_wave_2"
+                android:layout_width="@dimen/voice_wave_width"
+                android:layout_height="@dimen/voice_wave_min"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/bg_voice_active"
+                android:backgroundTint="@color/jarvis_voice_active" />
+
+            <View
+                android:id="@+id/voice_wave_3"
+                android:layout_width="@dimen/voice_wave_width"
+                android:layout_height="@dimen/voice_wave_min"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/bg_voice_active"
+                android:backgroundTint="@color/jarvis_voice_active" />
+
+            <View
+                android:id="@+id/voice_wave_4"
+                android:layout_width="@dimen/voice_wave_width"
+                android:layout_height="@dimen/voice_wave_min"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/bg_voice_active"
+                android:backgroundTint="@color/jarvis_voice_active" />
+
+            <View
+                android:id="@+id/voice_wave_5"
+                android:layout_width="@dimen/voice_wave_width"
+                android:layout_height="@dimen/voice_wave_min"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/bg_voice_active"
+                android:backgroundTint="@color/jarvis_voice_active" />
+        </LinearLayout>
+
+        <!-- Input Bar -->
+        <LinearLayout
+            android:id="@+id/layout_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="bottom"
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingTop="@dimen/spacing_sm"
+            android:paddingBottom="@dimen/spacing_md"
+            android:background="@color/jarvis_surface"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Mic button -->
+            <ImageButton
+                android:id="@+id/btn_voice"
+                android:layout_width="@dimen/btn_height_md"
+                android:layout_height="@dimen/btn_height_md"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:background="@drawable/bg_voice_inactive"
+                android:src="@drawable/ic_mic"
+                android:scaleType="centerInside"
+                android:padding="@dimen/spacing_sm"
+                android:contentDescription="Voice input"
+                app:tint="@color/jarvis_icon_tint" />
+
+            <!-- Input field with background -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:background="@drawable/bg_edittext"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/spacing_md">
+
+                <EditText
+                    android:id="@+id/editText_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:hint="Message JARVIS..."
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLines="4"
+                    android:minHeight="@dimen/input_height"
+                    android:paddingVertical="@dimen/spacing_sm"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textColorHint="@color/jarvis_text_hint"
+                    android:textSize="@dimen/text_chat" />
+            </LinearLayout>
+
+            <!-- Send button -->
+            <ImageButton
+                android:id="@+id/btn_send"
+                android:layout_width="@dimen/btn_height_md"
+                android:layout_height="@dimen/btn_height_md"
+                android:background="@drawable/bg_button_primary"
+                android:src="@drawable/ic_send"
+                android:scaleType="centerInside"
+                android:padding="@dimen/spacing_sm"
+                android:contentDescription="Send"
+                app:tint="@color/jarvis_window_background" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

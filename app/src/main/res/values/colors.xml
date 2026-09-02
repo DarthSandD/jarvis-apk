@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- JARVIS Modern Dark Theme — Arc Reactor Edition 2.0 -->
+    <!-- Designed for edge-to-edge, glass morphism, and Material 3 dynamic colors -->
+
+    <!-- Base backgrounds (deeper, more cinematic) -->
+    <color name="jarvis_window_background">#060A13</color>
+    <color name="jarvis_surface">#0C1220</color>
+    <color name="jarvis_surface_elevated">#141D2E</color>
+    <color name="jarvis_surface_overlay">#1A2740</color>
+
+    <!-- Glass morphism -->
+    <color name="jarvis_glass">#33FFFFFF</color>
+    <color name="jarvis_glass_dark">#66000000</color>
+    <color name="jarvis_glass_border">#0DFFFFFF</color>
+
+    <!-- Accent colors (more vibrant, neon) -->
+    <color name="jarvis_accent">#00E5FF</color>
+    <color name="jarvis_accent_dim">#009DB3</color>
+    <color name="jarvis_accent_secondary">#FFD600</color>
+    <color name="jarvis_accent_danger">#FF4444</color>
+    <color name="jarvis_accent_success">#00E676</color>
+
+    <!-- Chat bubbles -->
+    <color name="jarvis_chat_user_bubble">#1E2C45</color>
+    <color name="jarvis_chat_assistant_bubble">#0F1B2D</color>
+    <color name="jarvis_chat_time">#5B7090</color>
+
+    <!-- Input -->
+    <color name="jarvis_input_background">#141D2E</color>
+    <color name="jarvis_input_border">#2A3D5C</color>
+
+    <!-- Text (improved contrast) -->
+    <color name="jarvis_text_primary">#ECF2FF</color>
+    <color name="jarvis_text_secondary">#7B8FA8</color>
+    <color name="jarvis_text_hint">#4A5E78</color>
+
+    <!-- Divider -->
+    <color name="jarvis_divider">#152030</color>
+
+    <!-- Voice -->
+    <color name="jarvis_voice_active">#00E5FF</color>
+    <color name="jarvis_voice_inactive">#1E2C45</color>
+    <color name="jarvis_voice_ring">#00E5FF</color>
+
+    <!-- Status indicators (more vibrant) -->
+    <color name="jarvis_indicator_online">#00E676</color>
+    <color name="jarvis_indicator_offline">#FFD600</color>
+    <color name="jarvis_indicator_unknown">#4A5E78</color>
+    <color name="jarvis_green">#00E676</color>
+    <color name="jarvis_orange">#FFD600</color>
+    <color name="jarvis_gray">#4A5E78</color>
+
+    <!-- Icons -->
+    <color name="jarvis_icon_tint">#5B7090</color>
+    <color name="jarvis_icon_accent">#00E5FF</color>
+
+    <!-- Buttons -->
+    <color name="jarvis_send_button">#00E5FF</color>
+
+    <!-- Avatars -->
+    <color name="jarvis_avatar_user">#1A3A5C</color>
+    <color name="jarvis_avatar_assistant">#001A33</color>
+
+    <!-- Shimmer/Loading -->
+    <color name="jarvis_shimmer">#1E2C45</color>
+
+    <!-- Legacy / compat aliases -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="jarvis_black">#FF000000</color>
+    <color name="jarvis_white">#FFFFFFFF</color>
+</resources>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/jarvis_surface_elevated"
+    android:elevation="8dp"
+    android:padding="@dimen/spacing_lg">
+
+    <TextView
+        android:id="@+id/slider_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1.0"
+        android:textColor="@color/jarvis_accent"
+        android:textSize="@dimen/text_headline"
+        android:fontFamily="sans-serif-medium"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_md" />
+
+    <SeekBar
+        android:id="@+id/slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progressTint="@color/jarvis_accent"
+        android:thumbTint="@color/jarvis_accent"
+        android:min="0"
+        android:max="10" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/spacing_md">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.5"
+            android:textColor="@color/jarvis_text_secondary"
+            android:textSize="@dimen/text_caption" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2.0"
+            android:textColor="@color/jarvis_text_secondary"
+            android:textSize="@dimen/text_caption" />
+    </LinearLayout>
+
+</LinearLayout>
