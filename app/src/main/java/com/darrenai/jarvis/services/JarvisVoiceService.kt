@@ -25,7 +25,7 @@ import java.util.UUID
  * - Pace: deliberate but not slow
  * - Vocabulary: technical but accessible
  */
-class JarvisVoiceService(private val context: Context) {
+class JarvisVoiceService private constructor(private val context: Context) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var tts: TextToSpeech? = null
@@ -33,6 +33,15 @@ class JarvisVoiceService(private val context: Context) {
     private var currentJob: Job? = null
 
     companion object {
+        @Volatile
+        private var instance: JarvisVoiceService? = null
+
+        fun getInstance(context: Context): JarvisVoiceService {
+            return instance ?: synchronized(this) {
+                instance ?: JarvisVoiceService(context.applicationContext).also { instance = it }
+            }
+        }
+
         private const val VOICE_SPEED_DEFAULT = 0.92f
         private const val VOICE_PITCH_DEFAULT = 1.0f
         private const val CHARACTER_DELAY_MS = 8L
@@ -62,15 +71,6 @@ class JarvisVoiceService(private val context: Context) {
             - Never break the fourth wall about being an AI app.
             - Say "Sir" or "Boss" naturally, not forced.
         """.trimIndent()
-
-        @Volatile
-        private var instance: JarvisVoiceService? = null
-
-        fun getInstance(context: Context): JarvisVoiceService {
-            return instance ?: synchronized(this) {
-                instance ?: JarvisVoiceService(context.applicationContext).also { instance = it }
-            }
-        }
     }
 
     init {
