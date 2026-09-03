@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/jarvis_window_background">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/schedule_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/schedule_title"
+            style="@style/JARVIS_CardTitle" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_refresh_schedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_refresh"
+            android:textColor="@color/jarvis_accent"
+            android:textSize="@dimen/text_caption"
+            app:backgroundTint="@color/jarvis_chip_background"
+            app:strokeColor="@color/jarvis_accent_dim"
+            app:strokeWidth="1dp"
+            app:cornerRadius="@dimen/corner_pill"
+            app:icon="@drawable/ic_refresh"
+            app:iconTint="@color/jarvis_accent"
+            app:iconSize="16dp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/schedule_divider"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/jarvis_divider"
+        app:layout_constraintTop_toBottomOf="@id/schedule_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Cron jobs list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_schedule"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:padding="@dimen/spacing_md"
+        android:scrollbars="vertical"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@id/schedule_divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_cron_job" />
+
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/empty_schedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/schedule_divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_empty"
+            android:textColor="@color/jarvis_text_secondary"
+            android:textSize="@dimen/text_body" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

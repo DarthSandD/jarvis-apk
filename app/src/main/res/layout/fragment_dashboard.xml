@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/jarvis_window_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Arc Reactor Centerpiece -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:layout_marginBottom="@dimen/spacing_lg">
+
+            <View
+                android:id="@+id/arc_reactor"
+                android:layout_width="@dimen/arc_reactor_size"
+                android:layout_height="@dimen/arc_reactor_size"
+                android:layout_gravity="center"
+                android:background="@drawable/arc_reactor_bg" />
+
+            <View
+                android:id="@+id/arc_reactor_core"
+                android:layout_width="@dimen/arc_reactor_core"
+                android:layout_height="@dimen/arc_reactor_core"
+                android:layout_gravity="center"
+                android:background="@drawable/arc_reactor_core" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/txt_system_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ONLINE"
+                    android:textColor="@color/jarvis_accent"
+                    android:textSize="@dimen/text_title"
+                    android:fontFamily="sans-serif-light"
+                    android:letterSpacing="0.15" />
+
+                <TextView
+                    android:id="@+id/txt_uptime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="Uptime: --"
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- System Status Cards -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash_system_status"
+            style="@style/JARVIS_CardTitle"
+            android:layout_marginBottom="@dimen/spacing_sm" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/spacing_md">
+
+            <!-- CPU Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                app:cardCornerRadius="@dimen/corner_card"
+                app:cardBackgroundColor="@color/jarvis_surface_elevated"
+                app:strokeColor="@color/jarvis_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_sm">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dash_cpu"
+                        android:textColor="@color/jarvis_text_secondary"
+                        android:textSize="@dimen/text_caption" />
+
+                    <TextView
+                        android:id="@+id/txt_cpu_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--%"
+                        android:textColor="@color/jarvis_accent"
+                        android:textSize="@dimen/text_headline"
+                        android:fontFamily="sans-serif-light" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_cpu"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/bg_progress_fill"
+                        android:progressTint="@color/jarvis_accent" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- RAM Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                app:cardCornerRadius="@dimen/corner_card"
+                app:cardBackgroundColor="@color/jarvis_surface_elevated"
+                app:strokeColor="@color/jarvis_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_sm">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dash_ram"
+                        android:textColor="@color/jarvis_text_secondary"
+                        android:textSize="@dimen/text_caption" />
+
+                    <TextView
+                        android:id="@+id/txt_ram_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--%"
+                        android:textColor="@color/jarvis_gold"
+                        android:textSize="@dimen/text_headline"
+                        android:fontFamily="sans-serif-light" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_ram"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:progress="0"
+                        android:progressTint="@color/jarvis_gold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Battery Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardCornerRadius="@dimen/corner_card"
+                app:cardBackgroundColor="@color/jarvis_surface_elevated"
+                app:strokeColor="@color/jarvis_divider"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_sm">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dash_battery"
+                        android:textColor="@color/jarvis_text_secondary"
+                        android:textSize="@dimen/text_caption" />
+
+                    <TextView
+                        android:id="@+id/txt_battery_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--%"
+                        android:textColor="@color/jarvis_online"
+                        android:textSize="@dimen/text_headline"
+                        android:fontFamily="sans-serif-light" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_battery"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:progress="0"
+                        android:progressTint="@color/jarvis_online" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- Agent Workload -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash_agent_workload"
+            style="@style/JARVIS_CardTitle"
+            android:layout_marginBottom="@dimen/spacing_sm" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_md"
+            app:cardCornerRadius="@dimen/corner_card"
+            app:cardBackgroundColor="@color/jarvis_surface_elevated"
+            app:strokeColor="@color/jarvis_divider"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:id="@+id/layout_agents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
+
+                <!-- Agent rows will be added dynamically -->
+                <TextView
+                    android:id="@+id/txt_no_agents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Loading agents..."
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_body" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Quick Actions -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash_quick_actions"
+            style="@style/JARVIS_CardTitle"
+            android:layout_marginBottom="@dimen/spacing_sm" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/spacing_md">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_morning_briefing"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:text="@string/action_morning_briefing"
+                android:textColor="@color/jarvis_accent"
+                android:textSize="@dimen/text_caption"
+                app:backgroundTint="@color/jarvis_chip_background"
+                app:strokeColor="@color/jarvis_accent_dim"
+                app:strokeWidth="1dp"
+                app:cornerRadius="@dimen/corner_pill"
+                app:icon="@drawable/ic_schedule"
+                app:iconTint="@color/jarvis_accent"
+                app:iconSize="16dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_health_check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:text="@string/action_health_check"
+                android:textColor="@color/jarvis_online"
+                android:textSize="@dimen/text_caption"
+                app:backgroundTint="@color/jarvis_chip_background"
+                app:strokeColor="@color/jarvis_online"
+                app:strokeWidth="1dp"
+                app:cornerRadius="@dimen/corner_pill"
+                app:icon="@drawable/ic_server"
+                app:iconTint="@color/jarvis_online"
+                app:iconSize="16dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_status_report"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/spacing_xs"
+                android:text="@string/action_status_report"
+                android:textColor="@color/jarvis_gold"
+                android:textSize="@dimen/text_caption"
+                app:backgroundTint="@color/jarvis_chip_background"
+                app:strokeColor="@color/jarvis_gold_dim"
+                app:strokeWidth="1dp"
+                app:cornerRadius="@dimen/corner_pill"
+                app:icon="@drawable/ic_chat"
+                app:iconTint="@color/jarvis_gold"
+                app:iconSize="16dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_gateway_watch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/action_gateway_watch"
+                android:textColor="@color/agent_dev"
+                android:textSize="@dimen/text_caption"
+                app:backgroundTint="@color/jarvis_chip_background"
+                app:strokeColor="@color/agent_dev"
+                app:strokeWidth="1dp"
+                app:cornerRadius="@dimen/corner_pill"
+                app:icon="@drawable/ic_cloud"
+                app:iconTint="@color/agent_dev"
+                app:iconSize="16dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

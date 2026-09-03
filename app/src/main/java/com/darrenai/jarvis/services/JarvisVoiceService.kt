@@ -176,4 +176,69 @@ class JarvisVoiceService private constructor(private val context: Context) {
             else -> CHARACTER_DELAY_MS
         }
     }
+
+    // ---- Speech recognition (stub — uses Android SpeechRecognizer) ----
+
+    /**
+     * Callback interface for voice recognition results.
+     */
+    interface VoiceCallback {
+        fun onVoiceResult(text: String)
+        fun onVoiceError(error: String)
+    }
+
+    private var speechRecognizer: android.speech.SpeechRecognizer? = null
+    private var voiceCallback: VoiceCallback? = null
+
+    /**
+     * Start listening for voice input. Requires RECORD_AUDIO permission.
+     */
+    fun startListening(callback: VoiceCallback? = null) {
+        if (callback != null) voiceCallback = callback
+
+        if (speechRecognizer == null) {
+            speechRecognizer = android.speech.SpeechRecognizer.createSpeechRecognizer(context)
+        }
+
+        val intent = android.content.Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, "en-US")
+            putExtra(android.speech.RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+        }
+
+        speechRecognizer?.setRecognitionListener(object : android.speech.RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {}
+            override fun onBeginningOfSpeech() {}
+            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onBufferReceived(buffer: ByteArray?) {}
+            override fun onEndOfSpeech() {}
+            override fun onError(error: Int) {
+                val msg = when (error) {
+                    android.speech.SpeechRecognizer.ERROR_NO_MATCH -> "No speech detected"
+                    android.speech.SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Speech timeout"
+                    else -> "Voice error: $error"
+                }
+                voiceCallback?.onVoiceError(msg)
+            }
+            override fun onResults(results: Bundle?) {
+                val matches = results?.getStringArrayList(android.speech.SpeechRecognizer.RESULTS_RECOGNITION)
+                val text = matches?.firstOrNull() ?: ""
+                if (text.isNotEmpty()) {
+                    voiceCallback?.onVoiceResult(text)
+                }
+            }
+            override fun onPartialResults(partialResults: Bundle?) {}
+            override fun onEvent(eventType: Int, params: Bundle?) {}
+        })
+
+        speechRecognizer?.startListening(intent)
+    }
+
+    /**
+     * Stop listening for voice input.
+     */
+    fun stopListening() {
+        speechRecognizer?.stopListening()
+    }
 }

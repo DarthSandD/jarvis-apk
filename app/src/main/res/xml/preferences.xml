@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Connection">
+        <EditTextPreference
+            app:key="hermes_url"
+            app:title="Hermes Endpoint URL"
+            app:defaultValue="http://192.168.1.100:20128/v1/chat/completions"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            app:key="api_key"
+            app:title="API Key"
+            app:defaultValue=""
+            app:useSimpleSummaryProvider="false" />
+        <SwitchPreferenceCompat
+            app:key="online_mode"
+            app:title="Online Mode"
+            app:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Voice">
+        <SwitchPreferenceCompat
+            app:key="voice_enabled"
+            app:title="Voice Interaction"
+            app:defaultValue="true" />
+        <SwitchPreferenceCompat
+            app:key="tts_enabled"
+            app:title="Text-to-Speech Responses"
+            app:defaultValue="true" />
+        <ListPreference
+            app:key="voice_pitch"
+            app:title="Voice Pitch"
+            app:entries="@array/voice_pitch_options"
+            app:entryValues="@array/voice_pitch_values"
+            app:defaultValue="1.0" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="System">
+        <EditTextPreference
+            app:key="s23_llama_url"
+            app:title="S23 llama.cpp Fallback URL"
+            app:defaultValue="http://10.212.104.140:8081"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="battery_saver"
+            app:title="Battery Saver Mode"
+            app:defaultValue="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

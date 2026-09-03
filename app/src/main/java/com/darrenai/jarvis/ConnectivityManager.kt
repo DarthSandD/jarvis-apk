@@ -22,7 +22,7 @@ class ConnectivityManager(private val context: Context) {
         @Volatile private var _prefs: SharedPreferences? = null
         
         var serverIp: String
-            get() = _prefs?.getString("server_ip", "10.212.104.140") ?: "10.212.104.140"
+            get() = _prefs?.getString("server_ip", "10.212.104.124") ?: "10.212.104.124"
             set(value) { val p = _prefs; if (p != null) { p.edit().putString("server_ip", value); } }
 
         var serverPort: Int

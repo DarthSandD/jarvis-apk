@@ -1,43 +1,8 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep JARVIS app classes
+-keep class com.darrenai.jarvis.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep model classes
+-keep class com.darrenai.jarvis.data.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
-
-# JARVIS-specific rules
-
-# Keep data classes used for JSON serialization
--keep class com.darrenai.jarvis.model.** { *; }
--keep class com.darrenai.jarvis.network.** { *; }
-
-# Keep Gson type information
--keepattributes Signature
--keepattributes *Annotation*
-
-# Keep Room entities
--keep class com.darrenai.jarvis.database.** { *; }
-
-# OkHttp rules (usually not needed but safe)
--dontwarn okhttp3.**
--dontwarn okio.**
--dontwarn javax.annotation.**
-
-# Kotlin serialization
--keepattributes InnerClasses
--keep class kotlinx.serialization.** { *; }
+# Kotlin coroutines
+-keepclassmembers class kotlinx.coroutines.** { *; }

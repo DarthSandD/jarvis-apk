@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/jarvis_window_background">
+
+    <!-- Agent Selector Chips -->
+    <HorizontalScrollView
+        android:id="@+id/scroll_agents"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_agents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true" />
+    </HorizontalScrollView>
+
+    <!-- Chat List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_chat"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_sm"
+        android:scrollbars="vertical"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@id/scroll_agents"
+        app:layout_constraintBottom_toTopOf="@id/layout_voice_waves"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_chat_message" />
+
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/scroll_agents"
+        app:layout_constraintBottom_toTopOf="@id/layout_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <View
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/arc_reactor_bg"
+            android:alpha="0.3" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/chat_empty_title"
+            style="@style/JARVIS_Headline" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="@string/chat_empty_subtitle"
+            style="@style/JARVIS_Caption" />
+    </LinearLayout>
+
+    <!-- Voice Wave Indicator -->
+    <LinearLayout
+        android:id="@+id/layout_voice_waves"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/layout_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <View android:id="@+id/voice_wave_1"
+            android:layout_width="@dimen/voice_wave_width"
+            android:layout_height="@dimen/voice_wave_min"
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/voice_wave_2"
+            android:layout_width="@dimen/voice_wave_width"
+            android:layout_height="@dimen/voice_wave_min"
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/voice_wave_3"
+            android:layout_width="@dimen/voice_wave_width"
+            android:layout_height="@dimen/voice_wave_min"
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/voice_wave_4"
+            android:layout_width="@dimen/voice_wave_width"
+            android:layout_height="@dimen/voice_wave_min"
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/voice_wave_5"
+            android:layout_width="@dimen/voice_wave_width"
+            android:layout_height="@dimen/voice_wave_min"
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/arc_reactor_core" />
+    </LinearLayout>
+
+    <!-- Input Bar -->
+    <LinearLayout
+        android:id="@+id/layout_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_md"
+        android:background="@color/jarvis_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_voice"
+            android:layout_width="@dimen/btn_height_md"
+            android:layout_height="@dimen/btn_height_md"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:background="@drawable/bg_voice_inactive"
+            android:src="@drawable/ic_mic"
+            android:scaleType="centerInside"
+            android:padding="@dimen/spacing_sm"
+            android:contentDescription="Voice input"
+            app:tint="@color/jarvis_text_secondary" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:background="@drawable/bg_edittext"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/spacing_md">
+
+            <EditText
+                android:id="@+id/edit_message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@string/chat_hint"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="4"
+                android:minHeight="@dimen/input_height"
+                android:textColor="@color/jarvis_text_primary"
+                android:textColorHint="@color/jarvis_text_hint"
+                android:textSize="@dimen/text_chat" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_send"
+            android:layout_width="@dimen/btn_height_md"
+            android:layout_height="@dimen/btn_height_md"
+            android:background="@drawable/bg_button_primary"
+            android:src="@drawable/ic_send"
+            android:scaleType="centerInside"
+            android:padding="@dimen/spacing_sm"
+            android:contentDescription="Send"
+            app:tint="@color/jarvis_window_background" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
