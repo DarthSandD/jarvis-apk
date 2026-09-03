@@ -35,6 +35,389 @@
             android:orientation="vertical"
             android:padding="@dimen/spacing_lg">
 
+            <!-- AI Provider Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AI Provider"
+                android:textColor="@color/jarvis_accent"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <!-- OpenAI Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_sm">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="OpenAI API"
+                        android:textColor="@color/jarvis_text_primary"
+                        android:textSize="@dimen/text_label"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/radio_provider_openai"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/jarvis_accent" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Model"
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:layout_marginBottom="@dimen/spacing_xs" />
+
+                <Spinner
+                    android:id="@+id/spinner_openai_model"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/btn_height_md"
+                    android:background="@drawable/bg_edittext"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="API Key"
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption"
+                    android:layout_marginBottom="@dimen/spacing_xs" />
+
+                <EditText
+                    android:id="@+id/setting_openai_api_key"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/btn_height_md"
+                    android:background="@drawable/bg_edittext"
+                    android:hint="sk-..."
+                    android:inputType="textPassword"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textColorHint="@color/jarvis_text_hint"
+                    android:textSize="@dimen/text_label"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <Button
+                    android:id="@+id/btn_test_openai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/btn_height_sm"
+                    android:text="Test Connection"
+                    android:textSize="@dimen/text_caption"
+                    android:background="@drawable/bg_button_secondary"
+                    android:textColor="@color/jarvis_accent"
+                    android:paddingHorizontal="@dimen/spacing_md" />
+            </LinearLayout>
+
+            <!-- Local AI Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_sm">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Local AI (llama.cpp)"
+                        android:textColor="@color/jarvis_text_primary"
+                        android:textSize="@dimen/text_label"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/radio_provider_local"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/jarvis_accent" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Server URL"
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:layout_marginBottom="@dimen/spacing_xs" />
+
+                <EditText
+                    android:id="@+id/setting_local_endpoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/btn_height_md"
+                    android:background="@drawable/bg_edittext"
+                    android:hint="http://localhost:8081/v1"
+                    android:inputType="textUri"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textColorHint="@color/jarvis_text_hint"
+                    android:textSize="@dimen/text_label"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Model"
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption"
+                    android:layout_marginBottom="@dimen/spacing_xs" />
+
+                <EditText
+                    android:id="@+id/setting_local_model"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/btn_height_md"
+                    android:background="@drawable/bg_edittext"
+                    android:hint="llama-3.1-8b"
+                    android:inputType="text"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textColorHint="@color/jarvis_text_hint"
+                    android:textSize="@dimen/text_label"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_detect_local"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/btn_height_sm"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/spacing_xs"
+                        android:text="Auto-detect"
+                        android:textSize="@dimen/text_caption"
+                        android:background="@drawable/bg_button_secondary"
+                        android:textColor="@color/jarvis_accent"
+                        android:paddingHorizontal="@dimen/spacing_md" />
+
+                    <Button
+                        android:id="@+id/btn_test_local"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/btn_height_sm"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/spacing_xs"
+                        android:text="Test"
+                        android:textSize="@dimen/text_caption"
+                        android:background="@drawable/bg_button_secondary"
+                        android:textColor="@color/jarvis_accent"
+                        android:paddingHorizontal="@dimen/spacing_md" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Hermes Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_sm">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Hermes OmniRoute"
+                        android:textColor="@color/jarvis_text_primary"
+                        android:textSize="@dimen/text_label"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/radio_provider_hermes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/jarvis_accent" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Endpoint"
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:layout_marginBottom="@dimen/spacing_xs" />
+
+                <TextView
+                    android:id="@+id/txt_hermes_endpoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="10.212.104.140:20128"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textSize="@dimen/text_label"
+                    android:fontFamily="monospace"
+                    android:layout_marginBottom="@dimen/spacing_sm" />
+
+                <TextView
+                    android:id="@+id/txt_hermes_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Checking..."
+                    android:textColor="@color/jarvis_text_secondary"
+                    android:textSize="@dimen/text_caption" />
+
+                <Button
+                    android:id="@+id/btn_test_hermes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/btn_height_sm"
+                    android:text="Test Connection"
+                    android:textSize="@dimen/text_caption"
+                    android:background="@drawable/bg_button_secondary"
+                    android:textColor="@color/jarvis_accent"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    android:layout_marginTop="@dimen/spacing_sm" />
+            </LinearLayout>
+
+            <!-- Connection Status Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connection Status"
+                android:textColor="@color/jarvis_accent"
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_sm">
+
+                    <View
+                        android:id="@+id/status_dot_openai"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginEnd="@dimen/spacing_sm"
+                        android:background="@drawable/bg_voice_active"
+                        android:backgroundTint="@color/jarvis_gray" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="OpenAI"
+                        android:textColor="@color/jarvis_text_primary"
+                        android:textSize="@dimen/text_label" />
+
+                    <TextView
+                        android:id="@+id/txt_status_openai"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not configured"
+                        android:textColor="@color/jarvis_text_secondary"
+                        android:textSize="@dimen/text_caption" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_sm">
+
+                    <View
+                        android:id="@+id/status_dot_local"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginEnd="@dimen/spacing_sm"
+                        android:background="@drawable/bg_voice_active"
+                        android:backgroundTint="@color/jarvis_gray" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Local AI"
+                        android:textColor="@color/jarvis_text_primary"
+                        android:textSize="@dimen/text_label" />
+
+                    <TextView
+                        android:id="@+id/txt_status_local"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unknown"
+                        android:textColor="@color/jarvis_text_secondary"
+                        android:textSize="@dimen/text_caption" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <View
+                        android:id="@+id/status_dot_hermes"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginEnd="@dimen/spacing_sm"
+                        android:background="@drawable/bg_voice_active"
+                        android:backgroundTint="@color/jarvis_gray" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Hermes"
+                        android:textColor="@color/jarvis_text_primary"
+                        android:textSize="@dimen/text_label" />
+
+                    <TextView
+                        android:id="@+id/txt_status_hermes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unknown"
+                        android:textColor="@color/jarvis_text_secondary"
+                        android:textSize="@dimen/text_caption" />
+                </LinearLayout>
+            </LinearLayout>
+
             <!-- Server Section -->
             <TextView
                 android:layout_width="wrap_content"

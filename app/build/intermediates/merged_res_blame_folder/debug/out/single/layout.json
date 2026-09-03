@@ -1,34 +1,26 @@
 [
     {
-        "merged": "com.darrenai.jarvis.app-mergeDebugResources-41:/layout/dialog_text_input.xml",
-        "source": "com.darrenai.jarvis.app-main-44:/layout/dialog_text_input.xml"
+        "merged": "com.darrenai.jarvis.app-mergeDebugResources-42:/layout/activity_settings.xml",
+        "source": "com.darrenai.jarvis.app-main-45:/layout/activity_settings.xml"
     },
     {
-        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-mergeDebugResources-41:\\layout\\activity_settings.xml",
-        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-main-44:\\layout\\activity_settings.xml"
+        "merged": "com.darrenai.jarvis.app-mergeDebugResources-42:/layout/sheet_provider_selector.xml",
+        "source": "com.darrenai.jarvis.app-main-45:/layout/sheet_provider_selector.xml"
     },
     {
-        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-mergeDebugResources-41:\\layout\\dialog_slider.xml",
-        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-main-44:\\layout\\dialog_slider.xml"
+        "merged": "com.darrenai.jarvis.app-mergeDebugResources-42:/layout/item_chat_message.xml",
+        "source": "com.darrenai.jarvis.app-main-45:/layout/item_chat_message.xml"
     },
     {
-        "merged": "com.darrenai.jarvis.app-mergeDebugResources-41:/layout/activity_settings.xml",
-        "source": "com.darrenai.jarvis.app-main-44:/layout/activity_settings.xml"
+        "merged": "com.darrenai.jarvis.app-mergeDebugResources-42:/layout/activity_main.xml",
+        "source": "com.darrenai.jarvis.app-main-45:/layout/activity_main.xml"
     },
     {
-        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-mergeDebugResources-41:\\layout\\item_chat_message.xml",
-        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-main-44:\\layout\\item_chat_message.xml"
+        "merged": "com.darrenai.jarvis.app-mergeDebugResources-42:/layout/dialog_slider.xml",
+        "source": "com.darrenai.jarvis.app-main-45:/layout/dialog_slider.xml"
     },
     {
-        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-mergeDebugResources-41:\\layout\\dialog_text_input.xml",
-        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-main-44:\\layout\\dialog_text_input.xml"
-    },
-    {
-        "merged": "com.darrenai.jarvis.app-mergeDebugResources-41:/layout/dialog_slider.xml",
-        "source": "com.darrenai.jarvis.app-main-44:/layout/dialog_slider.xml"
-    },
-    {
-        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-mergeDebugResources-41:\\layout\\activity_main.xml",
-        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.5\\com.darrenai.jarvis.app-main-44:\\layout\\activity_main.xml"
+        "merged": "com.darrenai.jarvis.app-mergeDebugResources-42:/layout/dialog_text_input.xml",
+        "source": "com.darrenai.jarvis.app-main-45:/layout/dialog_text_input.xml"
     }
 ]

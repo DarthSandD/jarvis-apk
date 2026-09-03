@@ -23,18 +23,23 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.darrenai.jarvis.activity.SettingsActivity
+import com.darrenai.jarvis.ai.AiProvider
+import com.darrenai.jarvis.ai.AiService
+import com.darrenai.jarvis.ai.StreamEvent
 import com.darrenai.jarvis.databinding.ActivityMainBinding
 import com.darrenai.jarvis.model.ChatMessage
 import com.darrenai.jarvis.services.VoiceListenerService
-import kotlinx.coroutines.delay
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import java.util.Locale
 
 /**
  * MainActivity — JARVIS chat interface.
  *
  * Modern Android: edge-to-edge layout, Material 3, fluid animations,
- * dual-mode (online Hermes / offline local), voice I/O.
+ * multi-provider AI, voice I/O.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -43,6 +48,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tts: TextToSpeech
     private var voiceServiceBound = false
     private var voiceService: VoiceListenerService? = null
+
+    private lateinit var aiService: AiService
+    private var currentProvider: AiProvider = AiProvider.Hermes
+    private var isAiResponding = false
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
@@ -65,13 +74,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        aiService = AiService.getInstance(this)
+
         setupEdgeToEdge()
         setupChat()
         setupVoice()
         setupTTS()
-        setupConnectivity()
         setupModeIndicator()
         setupSettingsButton()
+        setupProviderChip()
 
         // Initialize greeting
         lifecycleScope.launch {
@@ -79,30 +91,14 @@ class MainActivity : AppCompatActivity() {
                 ChatMessage(ChatMessage.Role.SYSTEM, "JARVIS initialized.")
             )
             delay(600)
-            val mode = ConnectivityManager(this@MainActivity).getCurrentMode()
-            when (mode) {
-                ConnectivityManager.Mode.ONLINE -> {
-                    chatAdapter.addMessage(
-                        ChatMessage(ChatMessage.Role.ASSISTANT,
-                            "✓ Connected to Hermes AI.\nI'm ready. Ask me anything."
-                        )
-                    )
-                }
-                ConnectivityManager.Mode.OFFLINE -> {
-                    chatAdapter.addMessage(
-                        ChatMessage(ChatMessage.Role.ASSISTANT,
-                            "⚡ Running offline mode.\nI have local intelligence. Connect to the internet to unlock full Hermes AI."
-                        )
-                    )
-                }
-                else -> {
-                    chatAdapter.addMessage(
-                        ChatMessage(ChatMessage.Role.ASSISTANT,
-                            "Connecting..."
-                        )
-                    )
-                }
-            }
+            val provider = com.darrenai.jarvis.ai.PreferencesHelper(this@MainActivity).selectedProvider
+            currentProvider = provider
+            updateProviderChip()
+            chatAdapter.addMessage(
+                ChatMessage(ChatMessage.Role.ASSISTANT,
+                    "✓ Connected via ${provider.displayName}.\nI'm ready. Ask me anything."
+                )
+            )
         }
     }
 
@@ -237,35 +233,78 @@ class MainActivity : AppCompatActivity() {
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "jarvis_tts")
     }
 
-    private fun setupConnectivity() {
-        val connectivityManager = ConnectivityManager(this)
-        connectivityManager.startMonitoring()
-        connectivityManager.listener = { mode ->
-            runOnUiThread {
-                updateModeIndicator(mode)
-                val statusText = when (mode) {
-                    ConnectivityManager.Mode.ONLINE -> "Online • Hermes AI"
-                    ConnectivityManager.Mode.OFFLINE -> "Offline • Local AI"
-                    ConnectivityManager.Mode.UNKNOWN -> "Connecting..."
-                }
-                binding.txtModeStatus.text = statusText
-            }
-        }
-    }
-
     private fun setupModeIndicator() {
         binding.txtModeStatus.text = "Connecting..."
         binding.viewStatusDot.setBackgroundResource(R.drawable.bg_voice_active)
         binding.viewStatusDot.background?.mutate()?.setTint(getColor(R.color.jarvis_gray))
     }
 
-    private fun updateModeIndicator(mode: ConnectivityManager.Mode) {
-        val color = when (mode) {
-            ConnectivityManager.Mode.ONLINE -> getColor(R.color.jarvis_green)
-            ConnectivityManager.Mode.OFFLINE -> getColor(R.color.jarvis_orange)
-            ConnectivityManager.Mode.UNKNOWN -> getColor(R.color.jarvis_gray)
+    private fun setupProviderChip() {
+        updateProviderChip()
+        binding.chipProvider.setOnClickListener {
+            showProviderSelector()
         }
-        binding.viewStatusDot.background?.setTint(color)
+    }
+
+    private fun updateProviderChip() {
+        binding.chipProvider.text = currentProvider.displayName
+        val iconRes = when (currentProvider) {
+            AiProvider.OpenAI -> R.drawable.ic_cloud
+            AiProvider.Local -> R.drawable.ic_phone
+            AiProvider.Hermes -> R.drawable.ic_server
+        }
+        binding.chipProvider.setChipIconResource(iconRes)
+    }
+
+    private fun showProviderSelector() {
+        val bottomSheet = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.sheet_provider_selector, null)
+
+        val openAiChip = view.findViewById<Chip>(R.id.chip_select_openai)
+        val localChip = view.findViewById<Chip>(R.id.chip_select_local)
+        val hermesChip = view.findViewById<Chip>(R.id.chip_select_hermes)
+
+        openAiChip.setOnClickListener {
+            switchProvider(AiProvider.OpenAI)
+            bottomSheet.dismiss()
+        }
+        localChip.setOnClickListener {
+            switchProvider(AiProvider.Local)
+            bottomSheet.dismiss()
+        }
+        hermesChip.setOnClickListener {
+            switchProvider(AiProvider.Hermes)
+            bottomSheet.dismiss()
+        }
+
+        // Highlight current provider
+        when (currentProvider) {
+            AiProvider.OpenAI -> openAiChip.isChecked = true
+            AiProvider.Local -> localChip.isChecked = true
+            AiProvider.Hermes -> hermesChip.isChecked = true
+        }
+
+        // Disable OpenAI if no key is configured
+        val prefs = com.darrenai.jarvis.ai.PreferencesHelper(this)
+        if (prefs.openAiApiKey.isBlank()) {
+            openAiChip.isEnabled = false
+            openAiChip.text = "OpenAI (needs API key)"
+        }
+
+        bottomSheet.setContentView(view)
+        bottomSheet.show()
+    }
+
+    private fun switchProvider(provider: AiProvider) {
+        currentProvider = provider
+        com.darrenai.jarvis.ai.PreferencesHelper(this).selectedProvider = provider
+        updateProviderChip()
+
+        chatAdapter.addMessage(
+            ChatMessage(ChatMessage.Role.SYSTEM,
+                "Switched to ${provider.displayName}"
+            )
+        )
     }
 
     private fun setupSettingsButton() {
@@ -286,34 +325,60 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun sendMessage(text: String) {
+        if (isAiResponding) return // Prevent double-send
+
         vibrate()
         updateEmptyState()
         chatAdapter.addMessage(ChatMessage(ChatMessage.Role.USER, text))
         updateEmptyState()
 
+        isAiResponding = true
         chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, "Thinking..."))
         val thinkingIndex = chatAdapter.itemCount - 1
 
         lifecycleScope.launch {
-            val connectivityManager = ConnectivityManager(this@MainActivity)
-            val mode = connectivityManager.getCurrentMode()
-
             try {
-                val response = connectivityManager.sendMessage(
-                    listOf(ChatMessage(ChatMessage.Role.USER, text)),
-                    mode
-                ) { progress ->
-                    chatAdapter.updateMessage(thinkingIndex, "Thinking... $progress")
-                }
+                val responseText = StringBuilder()
+                val conversationHistory = chatAdapter.getMessagesForAi()
 
-                chatAdapter.removeMessageAt(thinkingIndex)
-                chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, response))
-                speak(response)
-                updateEmptyState()
+                aiService.chat(
+                    messages = conversationHistory,
+                    preferredProvider = currentProvider
+                ) { event ->
+                    runOnUiThread {
+                        when (event) {
+                            is StreamEvent.Delta -> {
+                                // Only accumulate actual response text, not status messages
+                                responseText.append(event.text)
+                                chatAdapter.updateMessage(thinkingIndex, responseText.toString())
+                            }
+                            is StreamEvent.Status -> {
+                                // Show status as temporary "thinking" text
+                                chatAdapter.updateMessage(thinkingIndex, event.message)
+                            }
+                            is StreamEvent.Done -> {
+                                val finalText = event.fullText.ifEmpty { responseText.toString() }
+                                chatAdapter.removeMessageAt(thinkingIndex)
+                                chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, finalText))
+                                speak(finalText)
+                                isAiResponding = false
+                                updateEmptyState()
+                            }
+                            is StreamEvent.Error -> {
+                                chatAdapter.removeMessageAt(thinkingIndex)
+                                val errorMsg = "⚠ ${event.error.message}"
+                                chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, errorMsg))
+                                isAiResponding = false
+                                updateEmptyState()
+                            }
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 chatAdapter.removeMessageAt(thinkingIndex)
                 val errorMsg = "I'm sorry, I encountered an error.\n${e.message}"
                 chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, errorMsg))
+                isAiResponding = false
                 updateEmptyState()
             }
         }
@@ -345,6 +410,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, VoiceListenerService::class.java)
             bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
+        // Refresh provider selection when returning from settings
+        val savedProvider = com.darrenai.jarvis.ai.PreferencesHelper(this).selectedProvider
+        if (savedProvider != currentProvider) {
+            currentProvider = savedProvider
+            updateProviderChip()
+        }
     }
 
     override fun onStop() {
@@ -359,6 +430,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         if (tts.isSpeaking) tts.stop()
         tts.shutdown()
-        ConnectivityManager(this).stopMonitoring()
+        aiService.destroy()
     }
 }

@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
@@ -23,16 +26,46 @@ public final class ActivitySettingsBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
+  public final Button btnDetectLocal;
+
+  @NonNull
   public final Button btnReset;
 
   @NonNull
   public final Button btnSave;
 
   @NonNull
+  public final Button btnTestHermes;
+
+  @NonNull
+  public final Button btnTestLocal;
+
+  @NonNull
+  public final Button btnTestOpenai;
+
+  @NonNull
+  public final RadioButton radioProviderHermes;
+
+  @NonNull
+  public final RadioButton radioProviderLocal;
+
+  @NonNull
+  public final RadioButton radioProviderOpenai;
+
+  @NonNull
   public final SwitchCompat settingAutoConnect;
 
   @NonNull
+  public final EditText settingLocalEndpoint;
+
+  @NonNull
+  public final EditText settingLocalModel;
+
+  @NonNull
   public final SwitchCompat settingNotificationEnabled;
+
+  @NonNull
+  public final EditText settingOpenaiApiKey;
 
   @NonNull
   public final EditText settingSampleRate;
@@ -53,26 +86,81 @@ public final class ActivitySettingsBinding implements ViewBinding {
   public final EditText settingVoiceTimeout;
 
   @NonNull
+  public final Spinner spinnerOpenaiModel;
+
+  @NonNull
+  public final View statusDotHermes;
+
+  @NonNull
+  public final View statusDotLocal;
+
+  @NonNull
+  public final View statusDotOpenai;
+
+  @NonNull
   public final MaterialToolbar toolbar;
 
-  private ActivitySettingsBinding(@NonNull LinearLayout rootView, @NonNull Button btnReset,
-      @NonNull Button btnSave, @NonNull SwitchCompat settingAutoConnect,
-      @NonNull SwitchCompat settingNotificationEnabled, @NonNull EditText settingSampleRate,
-      @NonNull EditText settingServerIp, @NonNull EditText settingServerPort,
-      @NonNull EditText settingVoiceLanguage, @NonNull EditText settingVoiceMode,
-      @NonNull EditText settingVoiceTimeout, @NonNull MaterialToolbar toolbar) {
+  @NonNull
+  public final TextView txtHermesEndpoint;
+
+  @NonNull
+  public final TextView txtHermesStatus;
+
+  @NonNull
+  public final TextView txtStatusHermes;
+
+  @NonNull
+  public final TextView txtStatusLocal;
+
+  @NonNull
+  public final TextView txtStatusOpenai;
+
+  private ActivitySettingsBinding(@NonNull LinearLayout rootView, @NonNull Button btnDetectLocal,
+      @NonNull Button btnReset, @NonNull Button btnSave, @NonNull Button btnTestHermes,
+      @NonNull Button btnTestLocal, @NonNull Button btnTestOpenai,
+      @NonNull RadioButton radioProviderHermes, @NonNull RadioButton radioProviderLocal,
+      @NonNull RadioButton radioProviderOpenai, @NonNull SwitchCompat settingAutoConnect,
+      @NonNull EditText settingLocalEndpoint, @NonNull EditText settingLocalModel,
+      @NonNull SwitchCompat settingNotificationEnabled, @NonNull EditText settingOpenaiApiKey,
+      @NonNull EditText settingSampleRate, @NonNull EditText settingServerIp,
+      @NonNull EditText settingServerPort, @NonNull EditText settingVoiceLanguage,
+      @NonNull EditText settingVoiceMode, @NonNull EditText settingVoiceTimeout,
+      @NonNull Spinner spinnerOpenaiModel, @NonNull View statusDotHermes,
+      @NonNull View statusDotLocal, @NonNull View statusDotOpenai, @NonNull MaterialToolbar toolbar,
+      @NonNull TextView txtHermesEndpoint, @NonNull TextView txtHermesStatus,
+      @NonNull TextView txtStatusHermes, @NonNull TextView txtStatusLocal,
+      @NonNull TextView txtStatusOpenai) {
     this.rootView = rootView;
+    this.btnDetectLocal = btnDetectLocal;
     this.btnReset = btnReset;
     this.btnSave = btnSave;
+    this.btnTestHermes = btnTestHermes;
+    this.btnTestLocal = btnTestLocal;
+    this.btnTestOpenai = btnTestOpenai;
+    this.radioProviderHermes = radioProviderHermes;
+    this.radioProviderLocal = radioProviderLocal;
+    this.radioProviderOpenai = radioProviderOpenai;
     this.settingAutoConnect = settingAutoConnect;
+    this.settingLocalEndpoint = settingLocalEndpoint;
+    this.settingLocalModel = settingLocalModel;
     this.settingNotificationEnabled = settingNotificationEnabled;
+    this.settingOpenaiApiKey = settingOpenaiApiKey;
     this.settingSampleRate = settingSampleRate;
     this.settingServerIp = settingServerIp;
     this.settingServerPort = settingServerPort;
     this.settingVoiceLanguage = settingVoiceLanguage;
     this.settingVoiceMode = settingVoiceMode;
     this.settingVoiceTimeout = settingVoiceTimeout;
+    this.spinnerOpenaiModel = spinnerOpenaiModel;
+    this.statusDotHermes = statusDotHermes;
+    this.statusDotLocal = statusDotLocal;
+    this.statusDotOpenai = statusDotOpenai;
     this.toolbar = toolbar;
+    this.txtHermesEndpoint = txtHermesEndpoint;
+    this.txtHermesStatus = txtHermesStatus;
+    this.txtStatusHermes = txtStatusHermes;
+    this.txtStatusLocal = txtStatusLocal;
+    this.txtStatusOpenai = txtStatusOpenai;
   }
 
   @Override
@@ -102,6 +190,12 @@ public final class ActivitySettingsBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btn_detect_local;
+      Button btnDetectLocal = ViewBindings.findChildViewById(rootView, id);
+      if (btnDetectLocal == null) {
+        break missingId;
+      }
+
       id = R.id.btn_reset;
       Button btnReset = ViewBindings.findChildViewById(rootView, id);
       if (btnReset == null) {
@@ -114,15 +208,69 @@ public final class ActivitySettingsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btn_test_hermes;
+      Button btnTestHermes = ViewBindings.findChildViewById(rootView, id);
+      if (btnTestHermes == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_test_local;
+      Button btnTestLocal = ViewBindings.findChildViewById(rootView, id);
+      if (btnTestLocal == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_test_openai;
+      Button btnTestOpenai = ViewBindings.findChildViewById(rootView, id);
+      if (btnTestOpenai == null) {
+        break missingId;
+      }
+
+      id = R.id.radio_provider_hermes;
+      RadioButton radioProviderHermes = ViewBindings.findChildViewById(rootView, id);
+      if (radioProviderHermes == null) {
+        break missingId;
+      }
+
+      id = R.id.radio_provider_local;
+      RadioButton radioProviderLocal = ViewBindings.findChildViewById(rootView, id);
+      if (radioProviderLocal == null) {
+        break missingId;
+      }
+
+      id = R.id.radio_provider_openai;
+      RadioButton radioProviderOpenai = ViewBindings.findChildViewById(rootView, id);
+      if (radioProviderOpenai == null) {
+        break missingId;
+      }
+
       id = R.id.setting_auto_connect;
       SwitchCompat settingAutoConnect = ViewBindings.findChildViewById(rootView, id);
       if (settingAutoConnect == null) {
         break missingId;
       }
 
+      id = R.id.setting_local_endpoint;
+      EditText settingLocalEndpoint = ViewBindings.findChildViewById(rootView, id);
+      if (settingLocalEndpoint == null) {
+        break missingId;
+      }
+
+      id = R.id.setting_local_model;
+      EditText settingLocalModel = ViewBindings.findChildViewById(rootView, id);
+      if (settingLocalModel == null) {
+        break missingId;
+      }
+
       id = R.id.setting_notification_enabled;
       SwitchCompat settingNotificationEnabled = ViewBindings.findChildViewById(rootView, id);
       if (settingNotificationEnabled == null) {
+        break missingId;
+      }
+
+      id = R.id.setting_openai_api_key;
+      EditText settingOpenaiApiKey = ViewBindings.findChildViewById(rootView, id);
+      if (settingOpenaiApiKey == null) {
         break missingId;
       }
 
@@ -162,15 +310,73 @@ public final class ActivitySettingsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.spinner_openai_model;
+      Spinner spinnerOpenaiModel = ViewBindings.findChildViewById(rootView, id);
+      if (spinnerOpenaiModel == null) {
+        break missingId;
+      }
+
+      id = R.id.status_dot_hermes;
+      View statusDotHermes = ViewBindings.findChildViewById(rootView, id);
+      if (statusDotHermes == null) {
+        break missingId;
+      }
+
+      id = R.id.status_dot_local;
+      View statusDotLocal = ViewBindings.findChildViewById(rootView, id);
+      if (statusDotLocal == null) {
+        break missingId;
+      }
+
+      id = R.id.status_dot_openai;
+      View statusDotOpenai = ViewBindings.findChildViewById(rootView, id);
+      if (statusDotOpenai == null) {
+        break missingId;
+      }
+
       id = R.id.toolbar;
       MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
       if (toolbar == null) {
         break missingId;
       }
 
-      return new ActivitySettingsBinding((LinearLayout) rootView, btnReset, btnSave,
-          settingAutoConnect, settingNotificationEnabled, settingSampleRate, settingServerIp,
-          settingServerPort, settingVoiceLanguage, settingVoiceMode, settingVoiceTimeout, toolbar);
+      id = R.id.txt_hermes_endpoint;
+      TextView txtHermesEndpoint = ViewBindings.findChildViewById(rootView, id);
+      if (txtHermesEndpoint == null) {
+        break missingId;
+      }
+
+      id = R.id.txt_hermes_status;
+      TextView txtHermesStatus = ViewBindings.findChildViewById(rootView, id);
+      if (txtHermesStatus == null) {
+        break missingId;
+      }
+
+      id = R.id.txt_status_hermes;
+      TextView txtStatusHermes = ViewBindings.findChildViewById(rootView, id);
+      if (txtStatusHermes == null) {
+        break missingId;
+      }
+
+      id = R.id.txt_status_local;
+      TextView txtStatusLocal = ViewBindings.findChildViewById(rootView, id);
+      if (txtStatusLocal == null) {
+        break missingId;
+      }
+
+      id = R.id.txt_status_openai;
+      TextView txtStatusOpenai = ViewBindings.findChildViewById(rootView, id);
+      if (txtStatusOpenai == null) {
+        break missingId;
+      }
+
+      return new ActivitySettingsBinding((LinearLayout) rootView, btnDetectLocal, btnReset, btnSave,
+          btnTestHermes, btnTestLocal, btnTestOpenai, radioProviderHermes, radioProviderLocal,
+          radioProviderOpenai, settingAutoConnect, settingLocalEndpoint, settingLocalModel,
+          settingNotificationEnabled, settingOpenaiApiKey, settingSampleRate, settingServerIp,
+          settingServerPort, settingVoiceLanguage, settingVoiceMode, settingVoiceTimeout,
+          spinnerOpenaiModel, statusDotHermes, statusDotLocal, statusDotOpenai, toolbar,
+          txtHermesEndpoint, txtHermesStatus, txtStatusHermes, txtStatusLocal, txtStatusOpenai);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

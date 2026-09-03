@@ -70,6 +70,24 @@
                     app:layout_constraintBottom_toBottomOf="@id/title_group"
                     app:layout_constraintStart_toEndOf="@id/title_group" />
 
+                <!-- Provider chip -->
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_provider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:text="Hermes"
+                    android:textColor="@color/jarvis_text_primary"
+                    android:textSize="@dimen/text_caption"
+                    app:chipIcon="@drawable/ic_server"
+                    app:chipIconTint="@color/jarvis_accent"
+                    app:chipBackgroundColor="@color/jarvis_chip_background"
+                    app:chipCornerRadius="@dimen/corner_pill"
+                    app:ensureMinTouchTargetSize="false"
+                    app:layout_constraintTop_toTopOf="@id/title_group"
+                    app:layout_constraintBottom_toBottomOf="@id/title_group"
+                    app:layout_constraintStart_toEndOf="@id/txt_mode_status" />
+
                 <!-- Settings button -->
                 <ImageButton
                     android:id="@+id/btn_settings_top"

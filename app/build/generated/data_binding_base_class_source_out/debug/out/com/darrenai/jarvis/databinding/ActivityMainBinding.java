@@ -16,6 +16,7 @@ import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.darrenai.jarvis.R;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.chip.Chip;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
@@ -32,6 +33,9 @@ public final class ActivityMainBinding implements ViewBinding {
 
   @NonNull
   public final ImageButton btnVoice;
+
+  @NonNull
+  public final Chip chipProvider;
 
   @NonNull
   public final EditText editTextMessage;
@@ -86,17 +90,19 @@ public final class ActivityMainBinding implements ViewBinding {
 
   private ActivityMainBinding(@NonNull CoordinatorLayout rootView, @NonNull ImageButton btnSend,
       @NonNull ImageButton btnSettingsTop, @NonNull ImageButton btnVoice,
-      @NonNull EditText editTextMessage, @NonNull LinearLayout emptyState,
-      @NonNull LinearLayout layoutInput, @NonNull LinearLayout layoutVoiceWaves,
-      @NonNull RecyclerView recyclerViewChat, @NonNull CoordinatorLayout root,
-      @NonNull LinearLayout titleGroup, @NonNull MaterialToolbar toolbar,
-      @NonNull View toolbarDivider, @NonNull TextView txtAppTitle, @NonNull TextView txtModeStatus,
-      @NonNull View viewStatusDot, @NonNull View voiceWave1, @NonNull View voiceWave2,
-      @NonNull View voiceWave3, @NonNull View voiceWave4, @NonNull View voiceWave5) {
+      @NonNull Chip chipProvider, @NonNull EditText editTextMessage,
+      @NonNull LinearLayout emptyState, @NonNull LinearLayout layoutInput,
+      @NonNull LinearLayout layoutVoiceWaves, @NonNull RecyclerView recyclerViewChat,
+      @NonNull CoordinatorLayout root, @NonNull LinearLayout titleGroup,
+      @NonNull MaterialToolbar toolbar, @NonNull View toolbarDivider, @NonNull TextView txtAppTitle,
+      @NonNull TextView txtModeStatus, @NonNull View viewStatusDot, @NonNull View voiceWave1,
+      @NonNull View voiceWave2, @NonNull View voiceWave3, @NonNull View voiceWave4,
+      @NonNull View voiceWave5) {
     this.rootView = rootView;
     this.btnSend = btnSend;
     this.btnSettingsTop = btnSettingsTop;
     this.btnVoice = btnVoice;
+    this.chipProvider = chipProvider;
     this.editTextMessage = editTextMessage;
     this.emptyState = emptyState;
     this.layoutInput = layoutInput;
@@ -158,6 +164,12 @@ public final class ActivityMainBinding implements ViewBinding {
       id = R.id.btn_voice;
       ImageButton btnVoice = ViewBindings.findChildViewById(rootView, id);
       if (btnVoice == null) {
+        break missingId;
+      }
+
+      id = R.id.chip_provider;
+      Chip chipProvider = ViewBindings.findChildViewById(rootView, id);
+      if (chipProvider == null) {
         break missingId;
       }
 
@@ -260,9 +272,9 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       return new ActivityMainBinding((CoordinatorLayout) rootView, btnSend, btnSettingsTop,
-          btnVoice, editTextMessage, emptyState, layoutInput, layoutVoiceWaves, recyclerViewChat,
-          root, titleGroup, toolbar, toolbarDivider, txtAppTitle, txtModeStatus, viewStatusDot,
-          voiceWave1, voiceWave2, voiceWave3, voiceWave4, voiceWave5);
+          btnVoice, chipProvider, editTextMessage, emptyState, layoutInput, layoutVoiceWaves,
+          recyclerViewChat, root, titleGroup, toolbar, toolbarDivider, txtAppTitle, txtModeStatus,
+          viewStatusDot, voiceWave1, voiceWave2, voiceWave3, voiceWave4, voiceWave5);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -46,6 +46,8 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.MessageViewHolder>() {
         }
     }
 
+    fun getMessagesForAi(): List<ChatMessage> = messages.toList()
+
     fun clear() {
         messages.clear()
         notifyDataSetChanged()

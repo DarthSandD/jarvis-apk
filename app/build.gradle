@@ -12,8 +12,8 @@ android {
         applicationId "com.darrenai.jarvis"
         minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 2
+        versionName "1.1.0"
 
         ndk {
             abiFilters 'arm64-v8a'
@@ -53,6 +53,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.google.code.gson:gson:2.11.0'
 
+    // encrypted SharedPreferences for secure API key storage
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+
     // local LLM inference (llama.cpp Android via JNI)
     // nativeLibraryDir contains libllama.so + bundled gguf model
     // FALLBACK: if no native lib, offline mode uses basic task handler
@@ -71,4 +74,7 @@ dependencies {
 
     // swipe refresh (Telegram-style pull)
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 }

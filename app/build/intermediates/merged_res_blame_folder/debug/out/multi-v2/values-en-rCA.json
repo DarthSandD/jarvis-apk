@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.darrenai.jarvis.app-mergeDebugResources-40:/values-en-rCA/values-en-rCA.xml",
+            "outputFile": "com.darrenai.jarvis.app-mergeDebugResources-41:/values-en-rCA/values-en-rCA.xml",
             "map": [
                 {
                     "source": "C:\\Users\\USER\\.gradle\\caches\\transforms-3\\616becf93a38ed0e12d5c7058cc290ab\\transformed\\appcompat-1.7.0\\res\\values-en-rCA\\values-en-rCA.xml",

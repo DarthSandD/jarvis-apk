@@ -70,4 +70,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="jarvis_black">#FF000000</color>
     <color name="jarvis_white">#FFFFFFFF</color>
+    <color name="jarvis_chip_background">#1A2740</color>
 </resources>
