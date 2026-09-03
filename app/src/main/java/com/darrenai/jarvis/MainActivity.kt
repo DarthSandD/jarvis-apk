@@ -28,6 +28,7 @@ import com.darrenai.jarvis.ai.AiService
 import com.darrenai.jarvis.ai.StreamEvent
 import com.darrenai.jarvis.databinding.ActivityMainBinding
 import com.darrenai.jarvis.model.ChatMessage
+import com.darrenai.jarvis.services.JarvisVoiceService
 import com.darrenai.jarvis.services.VoiceListenerService
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -36,22 +37,24 @@ import kotlinx.coroutines.delay
 import java.util.Locale
 
 /**
- * MainActivity — JARVIS chat interface.
+ * MainActivity — JARVIS 2090 Edition.
  *
- * Modern Android: edge-to-edge layout, Material 3, fluid animations,
- * multi-provider AI, voice I/O.
+ * Voice-first AI assistant with Hermes OmniRoute integration.
+ * Speaks like a real person using paced TTS (JarvisVoiceService).
  */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var chatAdapter: ChatAdapter
-    private lateinit var tts: TextToSpeech
     private var voiceServiceBound = false
     private var voiceService: VoiceListenerService? = null
 
     private lateinit var aiService: AiService
     private var currentProvider: AiProvider = AiProvider.Hermes
     private var isAiResponding = false
+
+    // 2090 JARVIS voice system
+    private lateinit var jarvisVoice: JarvisVoiceService
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
@@ -60,7 +63,6 @@ class MainActivity : AppCompatActivity() {
             voiceServiceBound = true
             updateVoiceButtonState()
         }
-
         override fun onServiceDisconnected(name: ComponentName?) {
             voiceService = null
             voiceServiceBound = false
@@ -76,16 +78,16 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         aiService = AiService.getInstance(this)
+        jarvisVoice = JarvisVoiceService.getInstance(this)
 
         setupEdgeToEdge()
         setupChat()
         setupVoice()
-        setupTTS()
         setupModeIndicator()
         setupSettingsButton()
         setupProviderChip()
 
-        // Initialize greeting
+        // Initialize greeting — Jarvis speaks when ready
         lifecycleScope.launch {
             chatAdapter.addMessage(
                 ChatMessage(ChatMessage.Role.SYSTEM, "JARVIS initialized.")
@@ -96,14 +98,26 @@ class MainActivity : AppCompatActivity() {
             updateProviderChip()
             chatAdapter.addMessage(
                 ChatMessage(ChatMessage.Role.ASSISTANT,
-                    "✓ Connected via ${provider.displayName}.\nI'm ready. Ask me anything."
+                    "Systems online. Hermes OmniRoute at 10.212.104.140:20128.\n" +
+                    "I'm listening, boss. What do you need?"
                 )
             )
+            // Speak the greeting with paced TTS
+            jarvisVoice.speak("Systems online. Hermes connected. I'm listening, boss.")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh provider from saved prefs
+        val saved = com.darrenai.jarvis.ai.PreferencesHelper(this).selectedProvider
+        if (saved != currentProvider) {
+            currentProvider = saved
+            updateProviderChip()
         }
     }
 
     private fun setupEdgeToEdge() {
-        // Enable edge-to-edge display
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.toolbar.setPadding(0, systemBars.top, 0, 0)
@@ -117,7 +131,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Hide system bars
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.let {
                 it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
@@ -132,7 +145,7 @@ class MainActivity : AppCompatActivity() {
                 stackFromEnd = true
             }
             adapter = chatAdapter
-            itemAnimator = null // Disable default animations for smoother scroll
+            itemAnimator = null
         }
 
         chatAdapter.setOnNewMessageListener {
@@ -176,6 +189,12 @@ class MainActivity : AppCompatActivity() {
                         runOnUiThread {
                             binding.editTextMessage.setText(transcript)
                             binding.editTextMessage.setSelection(transcript.length)
+                            // Show what Jarvis heard
+                            chatAdapter.addMessage(
+                                ChatMessage(ChatMessage.Role.SYSTEM,
+                                    "Heard: \"$transcript\""
+                                )
+                            )
                         }
                     }
                     showVoiceWaves()
@@ -190,7 +209,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showVoiceWaves() {
         binding.layoutVoiceWaves.visibility = View.VISIBLE
-        // Simple animation - could be replaced with proper ValueAnimator
         val waves = listOf(
             binding.voiceWave1,
             binding.voiceWave2,
@@ -216,21 +234,6 @@ class MainActivity : AppCompatActivity() {
             binding.btnVoice.setImageResource(R.drawable.ic_mic)
             binding.btnVoice.setBackgroundResource(R.drawable.bg_voice_inactive)
         }
-    }
-
-    private fun setupTTS() {
-        tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                tts.language = Locale.US
-                tts.setSpeechRate(0.85f)
-                tts.setPitch(1.0f)
-            }
-        }
-    }
-
-    private fun speak(text: String) {
-        if (tts.isSpeaking) tts.stop()
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "jarvis_tts")
     }
 
     private fun setupModeIndicator() {
@@ -277,14 +280,12 @@ class MainActivity : AppCompatActivity() {
             bottomSheet.dismiss()
         }
 
-        // Highlight current provider
         when (currentProvider) {
             AiProvider.OpenAI -> openAiChip.isChecked = true
             AiProvider.Local -> localChip.isChecked = true
             AiProvider.Hermes -> hermesChip.isChecked = true
         }
 
-        // Disable OpenAI if no key is configured
         val prefs = com.darrenai.jarvis.ai.PreferencesHelper(this)
         if (prefs.openAiApiKey.isBlank()) {
             openAiChip.isEnabled = false
@@ -324,11 +325,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var serverIp: String = "10.212.104.140"
+
     private fun sendMessage(text: String) {
-        if (isAiResponding) return // Prevent double-send
+        if (isAiResponding) return
 
         vibrate()
-        updateEmptyState()
+
         chatAdapter.addMessage(ChatMessage(ChatMessage.Role.USER, text))
         updateEmptyState()
 
@@ -338,36 +341,50 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val responseText = StringBuilder()
                 val conversationHistory = chatAdapter.getMessagesForAi()
 
+                // Add JARVIS personality prompt for offline mode
+                val enhancedHistory = if (currentProvider == AiProvider.Local) {
+                    val systemMsg = ChatMessage(
+                        ChatMessage.Role.SYSTEM,
+                        JarvisVoiceService.PERSONALITY_SYSTEM
+                    )
+                    listOf(systemMsg) + conversationHistory
+                } else {
+                    conversationHistory
+                }
+
                 aiService.chat(
-                    messages = conversationHistory,
+                    messages = enhancedHistory,
                     preferredProvider = currentProvider
                 ) { event ->
                     runOnUiThread {
                         when (event) {
                             is StreamEvent.Delta -> {
-                                // Only accumulate actual response text, not status messages
-                                responseText.append(event.text)
-                                chatAdapter.updateMessage(thinkingIndex, responseText.toString())
+                                chatAdapter.updateMessage(thinkingIndex, event.text)
                             }
                             is StreamEvent.Status -> {
-                                // Show status as temporary "thinking" text
                                 chatAdapter.updateMessage(thinkingIndex, event.message)
                             }
                             is StreamEvent.Done -> {
-                                val finalText = event.fullText.ifEmpty { responseText.toString() }
+                                val finalText = event.fullText.ifEmpty {
+                                    chatAdapter.getMessage(thinkingIndex)?.content ?: ""
+                                }
                                 chatAdapter.removeMessageAt(thinkingIndex)
-                                chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, finalText))
-                                speak(finalText)
+                                chatAdapter.addMessage(
+                                    ChatMessage(ChatMessage.Role.ASSISTANT, finalText)
+                                )
+                                // Speak with Jarvis paced voice
+                                jarvisVoice.speak(finalText)
                                 isAiResponding = false
                                 updateEmptyState()
                             }
                             is StreamEvent.Error -> {
                                 chatAdapter.removeMessageAt(thinkingIndex)
                                 val errorMsg = "⚠ ${event.error.message}"
-                                chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, errorMsg))
+                                chatAdapter.addMessage(
+                                    ChatMessage(ChatMessage.Role.ASSISTANT, errorMsg)
+                                )
                                 isAiResponding = false
                                 updateEmptyState()
                             }
@@ -377,7 +394,9 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 chatAdapter.removeMessageAt(thinkingIndex)
                 val errorMsg = "I'm sorry, I encountered an error.\n${e.message}"
-                chatAdapter.addMessage(ChatMessage(ChatMessage.Role.ASSISTANT, errorMsg))
+                chatAdapter.addMessage(
+                    ChatMessage(ChatMessage.Role.ASSISTANT, errorMsg)
+                )
                 isAiResponding = false
                 updateEmptyState()
             }
@@ -410,12 +429,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, VoiceListenerService::class.java)
             bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
-        // Refresh provider selection when returning from settings
-        val savedProvider = com.darrenai.jarvis.ai.PreferencesHelper(this).selectedProvider
-        if (savedProvider != currentProvider) {
-            currentProvider = savedProvider
-            updateProviderChip()
-        }
     }
 
     override fun onStop() {
@@ -428,8 +441,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (tts.isSpeaking) tts.stop()
-        tts.shutdown()
+        if (jarvisVoice.isCurrentlySpeaking()) {
+            jarvisVoice.stop()
+        }
+        jarvisVoice.shutdown()
         aiService.destroy()
     }
 }

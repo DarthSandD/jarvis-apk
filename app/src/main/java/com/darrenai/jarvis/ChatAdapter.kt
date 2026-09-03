@@ -74,32 +74,36 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.MessageViewHolder>() {
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(msg: ChatMessage, position: Int) {
-            val time = timeFormat.format(Date())
+            val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 
-            // Reset visibility
-            binding.containerUser.visibility = View.GONE
-            binding.containerAssistant.visibility = View.GONE
-            binding.txtSystemMessage.visibility = View.GONE
-
+            // Show/hide containers based on role
             when (msg.role) {
                 ChatMessage.Role.USER -> {
-                    binding.containerUser.visibility = View.VISIBLE
-                    binding.txtUserMessage.text = msg.content
-                    binding.txtUserTime.text = time
+                    if (binding.containerUser != null) {
+                        binding.containerUser.visibility = View.VISIBLE
+                        binding.containerAssistant.visibility = View.GONE
+                        binding.txtSystemMessage.visibility = View.GONE
+                        binding.txtUserMessage.text = msg.content
+                        binding.txtUserTime.text = time
+                    }
                 }
                 ChatMessage.Role.ASSISTANT -> {
-                    binding.containerAssistant.visibility = View.VISIBLE
-                    binding.txtAssistantMessage.text = msg.content
-                    binding.txtAssistantTime.text = time
-
-                    // Hide avatar for consecutive assistant messages
-                    val showAvatar = position == 0 ||
-                        messages.getOrNull(position - 1)?.role != ChatMessage.Role.ASSISTANT
-                    binding.avatarAssistant.visibility = if (showAvatar) View.VISIBLE else View.INVISIBLE
+                    if (binding.containerAssistant != null) {
+                        binding.containerAssistant.visibility = View.VISIBLE
+                        binding.containerUser.visibility = View.GONE
+                        binding.txtSystemMessage.visibility = View.GONE
+                        binding.txtAssistantMessage.text = msg.content
+                        binding.txtAssistantTime.text = time
+                        val showAvatar = position == 0 ||
+                            messages.getOrNull(position - 1)?.role != ChatMessage.Role.ASSISTANT
+                        binding.avatarAssistant?.visibility = if (showAvatar) View.VISIBLE else View.INVISIBLE
+                    }
                 }
                 ChatMessage.Role.SYSTEM -> {
                     binding.txtSystemMessage.visibility = View.VISIBLE
                     binding.txtSystemMessage.text = msg.content
+                    binding.containerUser.visibility = View.GONE
+                    binding.containerAssistant.visibility = View.GONE
                 }
             }
         }

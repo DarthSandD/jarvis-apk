@@ -12,10 +12,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * Local AI provider — communicates with a [llama.cpp](https://github.com/ggerganov/llama.cpp)
- * server that exposes the OpenAI-compatible `/v1/chat/completions` endpoint.
+ * Local AI provider — connects to a llama.cpp server with OpenAI-compatible API.
  *
- * The endpoint URL and model name are fully configurable via [PreferencesHelper].
+ * When used offline, injects the JARVIS personality system prompt to keep
+ * responses sounding like a real person even without Hermes.
  */
 class LocalAiProvider(
     private val endpoint: String = PreferencesHelper.DEFAULT_LOCAL_ENDPOINT,
@@ -32,12 +32,15 @@ class LocalAiProvider(
         private const val READ_TIMEOUT_MS = 60_000
         private val gson = Gson()
 
-        /** Normalize an endpoint: strip trailing slashes and ensure /chat/completions suffix. */
+        /** Normalize endpoint URL — strip trailing slashes and ensure /v1 suffix. */
         fun normalizeEndpoint(raw: String): String {
             var url = raw.trimEnd('/')
             if (!url.endsWith("/v1")) url += "/v1"
             return url
         }
+
+        // Reuse the same JARVIS system prompt as HermesProvider
+        val JARVIS_SYSTEM_PROMPT = HermesProvider.JARVIS_SYSTEM_PROMPT
     }
 
     // ---- DTOs -----------------------------------------------------------
@@ -59,8 +62,7 @@ class LocalAiProvider(
     )
 
     private data class DeltaContent(
-        val content: String? = null,
-        val role: String? = null
+        val content: String? = null
     )
 
     private data class StreamResponse(
@@ -70,8 +72,7 @@ class LocalAiProvider(
 
     private data class NonStreamChoice(
         val message: LlamaMessage? = null,
-        val index: Int = 0,
-        @SerializedName("finish_reason") val finishReason: String? = null
+        val index: Int = 0
     )
 
     private data class NonStreamResponse(
@@ -87,7 +88,7 @@ class LocalAiProvider(
         val id: String
     )
 
-    // ---- IProvider -------------------------------------------------------
+    // ---- IProvider ------------------------------------------------------
 
     override suspend fun chat(
         messages: List<ChatMessage>,
@@ -97,22 +98,36 @@ class LocalAiProvider(
         val url = normalizeEndpoint(endpoint)
         val completionsUrl = "$url/chat/completions"
 
-        val trimmed = trimMessages(messages)
+        // Inject JARVIS personality for offline mode
+        val enriched = buildChatWithPersona(messages)
+        val trimmed = trimMessages(enriched)
 
-        // Attempt streaming first
-        val streamed = runCatching { doStream(completionsUrl, trimmed, onEvent) }.getOrDefault(false)
+        onEvent(StreamEvent.Status("Local systems online..."))
+
+        // Try streaming first
+        val streamed = runCatching {
+            doStream(completionsUrl, trimmed, onEvent)
+        }.getOrDefault(false)
+
         if (streamed) return@withContext
 
         // Fallback to non-streaming
-        val full = runCatching { doNonStream(completionsUrl, trimmed) }.getOrElse { e ->
-            onEvent(StreamEvent.Error(AiError.Unknown(e.message ?: e.javaClass.simpleName)))
+        val full = runCatching {
+            doNonStream(completionsUrl, trimmed)
+        }.getOrElse { e ->
+            onEvent(StreamEvent.Error(
+                AiError.Unknown(e.message ?: e.javaClass.simpleName)
+            ))
             return@withContext
         }
+
         if (full.isNotEmpty()) {
             onEvent(StreamEvent.Delta(full))
             onEvent(StreamEvent.Done(full))
         } else {
-            onEvent(StreamEvent.Error(AiError.Unknown("Empty response from local server")))
+            onEvent(StreamEvent.Error(
+                AiError.Unknown("Empty response from local server")
+            ))
         }
     }
 
@@ -126,6 +141,7 @@ class LocalAiProvider(
             maxTokens = 5,
             stream = false
         )
+
         try {
             val connection = openConnection(completionsUrl)
             writeBody(connection, body)
@@ -145,10 +161,7 @@ class LocalAiProvider(
         }
     }
 
-    /**
-     * Auto-detect available models by querying `/v1/models`.
-     * Returns a list of model IDs, or empty list if the endpoint is unreachable.
-     */
+    /** Auto-detect available models from the server. */
     suspend fun detectModels(): List<String> = withContext(Dispatchers.IO) {
         val url = normalizeEndpoint(endpoint)
         val modelsUrl = "$url/models"
@@ -172,7 +185,7 @@ class LocalAiProvider(
         }
     }
 
-    // ---- Streaming -------------------------------------------------------
+    // ---- Streaming ------------------------------------------------------
 
     private suspend fun doStream(
         completionsUrl: String,
@@ -182,7 +195,9 @@ class LocalAiProvider(
 
         val body = LlamaRequest(
             model = model,
-            messages = messages.map { LlamaMessage(it.role.name.lowercase(), it.content) },
+            messages = messages.map { msg ->
+                LlamaMessage(msg.role.name.lowercase(), msg.content)
+            },
             maxTokens = maxTokens,
             stream = true
         )
@@ -196,9 +211,7 @@ class LocalAiProvider(
         return@withContext try {
             writeBody(connection, body)
             val code = connection.responseCode
-            if (code !in 200..299) {
-                return@withContext false
-            }
+            if (code !in 200..299) return@withContext false
 
             val reader = BufferedReader(InputStreamReader(connection.inputStream))
             val fullText = StringBuilder()
@@ -240,15 +253,18 @@ class LocalAiProvider(
         }
     }
 
-    // ---- Non-streaming ---------------------------------------------------
+    // ---- Non-streaming --------------------------------------------------
 
     private suspend fun doNonStream(
         completionsUrl: String,
         messages: List<ChatMessage>
     ): String = withContext(Dispatchers.IO) {
+
         val body = LlamaRequest(
             model = model,
-            messages = messages.map { LlamaMessage(it.role.name.lowercase(), it.content) },
+            messages = messages.map { msg ->
+                LlamaMessage(msg.role.name.lowercase(), msg.content)
+            },
             maxTokens = maxTokens,
             stream = false
         )
@@ -271,7 +287,7 @@ class LocalAiProvider(
         }
     }
 
-    // ---- Helpers ----------------------------------------------------------
+    // ---- Helpers --------------------------------------------------------
 
     private fun openConnection(url: String): HttpURLConnection {
         val urlObj = URL(url)
@@ -289,10 +305,24 @@ class LocalAiProvider(
         connection.outputStream.use { it.write(json.toByteArray(Charsets.UTF_8)) }
     }
 
+    /** Insert JARVIS personality system message at the front. */
+    private fun buildChatWithPersona(messages: List<ChatMessage>): List<ChatMessage> {
+        val existing = messages.firstOrNull {
+            it.role == ChatMessage.Role.SYSTEM && it.content.contains("J.A.R.V.I.S", ignoreCase = true)
+        }
+        return if (existing != null) {
+            messages
+        } else {
+            listOf(
+                ChatMessage(ChatMessage.Role.SYSTEM, JARVIS_SYSTEM_PROMPT)
+            ) + messages
+        }
+    }
+
+    /** Trim messages to fit context window. */
     private fun trimMessages(messages: List<ChatMessage>): List<ChatMessage> {
         val totalChars = messages.sumOf { it.content.length }
         if (totalChars <= maxContextChars) return messages
-
         val trimmed = messages.toMutableList()
         while (trimmed.size > 2 && trimmed.sumOf { it.content.length } > maxContextChars) {
             val idx = trimmed.indexOfFirst { it.role != ChatMessage.Role.SYSTEM }

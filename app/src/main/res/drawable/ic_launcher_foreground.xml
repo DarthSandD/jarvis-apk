@@ -4,15 +4,90 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- JARVIS 'J' lettermark -->
+    <!-- Arc Reactor core glow (outer ring) -->
     <path
-        android:fillColor="#007AFF"
-        android:pathData="M54,28 L70,76 L56,76 L56,84 L44,84 L44,64 L56,64 L50,48 L34,76 L28,76 Z M38,38 L50,54 L66,30 Z" />
-    <!-- Arc accent -->
-    <path
-        android:fillColor="#34C759"
-        android:pathData="M30,78 A24,24 0 0,1 78,78"
-        android:strokeWidth="3"
-        android:strokeColor="#34C759"
+        android:fillColor="#00E5FF"
+        android:pathData="M54,54 m-40,0 a40,40 0 1,0 80,0 a40,40 0 1,0 -80,0"
+        android:strokeWidth="2"
+        android:strokeColor="#00E5FF"
         android:fillType="evenOdd" />
+    <!-- Inner glow ring -->
+    <path
+        android:fillColor="#0066FF"
+        android:pathData="M54,54 m-32,0 a32,32 0 1,0 64,0 a32,32 0 1,0 -64,0"
+        android:strokeWidth="1"
+        android:strokeColor="#0066FF"
+        android:fillType="evenOdd" />
+    <!-- Core circle -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,54 m-20,0 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0" />
+    <!-- Center bright spot -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,54 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0" />
+    <!-- Energy lines (top) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,54 L54,20"
+        android:strokeWidth="1.5"
+        android:strokeColor="#00E5FF"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,54 L54,20"
+        android:strokeWidth="1"
+        android:strokeColor="#44FFFF"
+        android:strokeLineCap="round"
+        android:translateX="0"
+        android:translateY="0" />
+    <!-- Energy lines (left) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,54 L20,54"
+        android:strokeWidth="1.5"
+        android:strokeColor="#00E5FF"
+        android:strokeLineCap="round" />
+    <!-- Energy lines (right) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,54 L88,54"
+        android:strokeWidth="1.5"
+        android:strokeColor="#00E5FF"
+        android:strokeLineCap="round" />
+    <!-- Energy lines (bottom) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,54 L54,88"
+        android:strokeWidth="1.5"
+        android:strokeColor="#00E5FF"
+        android:strokeLineCap="round" />
+    <!-- Diagonal energy line (top-left) -->
+    <path
+        android:fillColor="#0066FF"
+        android:pathData="M54,54 L28,28"
+        android:strokeWidth="1"
+        android:strokeColor="#0066FF"
+        android:strokeLineCap="round" />
+    <!-- Diagonal energy line (top-right) -->
+    <path
+        android:fillColor="#0066FF"
+        android:pathData="M54,54 L80,28"
+        android:strokeWidth="1"
+        android:strokeColor="#0066FF"
+        android:strokeLineCap="round" />
+    <!-- Diagonal energy line (bottom-left) -->
+    <path
+        android:fillColor="#0066FF"
+        android:pathData="M54,54 L28,80"
+        android:strokeWidth="1"
+        android:strokeColor="#0066FF"
+        android:strokeLineCap="round" />
+    <!-- Diagonal energy line (bottom-right) -->
+    <path
+        android:fillColor="#0066FF"
+        android:pathData="M54,54 L80,80"
+        android:strokeWidth="1"
+        android:strokeColor="#0066FF"
+        android:strokeLineCap="round" />
 </vector>
