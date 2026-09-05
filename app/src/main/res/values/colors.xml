@@ -48,6 +48,9 @@
     <!-- Launcher icon background -->
     <color name="jarvis_black">#0A0B0F</color>
 
+    <!-- Accent (dark variant) -->
+    <color name="jarvis_accent_dark">#003355</color>
+
     <!-- Legacy compat -->
     <color name="colorPrimary">#00BFFF</color>
     <color name="colorPrimaryDark">#0A0B0F</color>

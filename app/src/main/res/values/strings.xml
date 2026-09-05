@@ -1,6 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">JARVIS</string>
+
+    <!-- Voice -->
+    <string name="voice_tap_to_speak">Tap to speak</string>
+    <string name="voice_listening">Listening…</string>
+    <string name="voice_processing">Processing…</string>
+    <string name="voice_history">Voice History</string>
+    <string name="voice_settings">Voice Settings</string>
+    <string name="face_visualizer">Jarvis Face Visualizer</string>
+    <string name="face_circuit_board">Circuit Board</string>
+    <string name="face_radial">Radial</string>
+    <string name="face_matrix">Face in the Code</string>
+    <string name="face_neural">Neural Core</string>
+    <string name="face_idle">IDLE</string>
+    <string name="face_listening">LISTENING</string>
+    <string name="face_thinking">THINKING</string>
+    <string name="face_speaking">SPEAKING</string>
 
     <!-- Navigation -->
     <string name="nav_dashboard">Dashboard</string>
@@ -9,38 +24,29 @@
     <string name="nav_schedule">Schedule</string>
     <string name="nav_library">Library</string>
 
+    <!-- Chat -->
+    <string name="chat_empty_title">No messages yet</string>
+    <string name="chat_empty_subtitle">Start a conversation with Jarvis</string>
+    <string name="chat_hint">Type a message…</string>
+
     <!-- Dashboard -->
     <string name="dash_system_status">System Status</string>
-    <string name="dash_agent_workload">Agent Workload</string>
-    <string name="dash_quick_actions">Quick Actions</string>
     <string name="dash_cpu">CPU</string>
     <string name="dash_ram">RAM</string>
     <string name="dash_battery">Battery</string>
-
-    <!-- Actions -->
-    <string name="action_morning_briefing">Briefing</string>
-    <string name="action_health_check">Health</string>
-    <string name="action_status_report">Report</string>
-    <string name="action_gateway_watch">Gateway</string>
-
-    <!-- Chat -->
-    <string name="chat_hint">Ask JARVIS...</string>
-    <string name="chat_empty_title">Ready when you are</string>
-    <string name="chat_empty_subtitle">Tap the mic or type a command</string>
-
-    <!-- Voice -->
-    <string name="voice_tap_to_speak">Tap to speak</string>
-    <string name="voice_listening">Listening...</string>
-    <string name="voice_processing">Processing...</string>
-    <string name="voice_history">History</string>
-    <string name="voice_settings">Settings</string>
-
-    <!-- Schedule -->
-    <string name="schedule_title">Scheduled Tasks</string>
-    <string name="schedule_refresh">Refresh</string>
-    <string name="schedule_empty">No scheduled tasks found</string>
+    <string name="dash_agent_workload">Agent Workload</string>
+    <string name="dash_quick_actions">Quick Actions</string>
+    <string name="action_morning_briefing">Morning Briefing</string>
+    <string name="action_health_check">Health Check</string>
+    <string name="action_status_report">Status Report</string>
+    <string name="action_gateway_watch">Gateway Watch</string>
 
     <!-- Library -->
-    <string name="library_title">Document Library</string>
-    <string name="library_empty">No documents stored</string>
+    <string name="library_title">Knowledge Library</string>
+    <string name="library_empty">No documents stored yet</string>
+
+    <!-- Schedule -->
+    <string name="schedule_title">Schedule</string>
+    <string name="schedule_refresh">Refresh</string>
+    <string name="schedule_empty">No scheduled tasks</string>
 </resources>

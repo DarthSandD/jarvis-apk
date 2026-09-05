@@ -8,30 +8,30 @@
     <fragment
         android:id="@+id/nav_dashboard"
         android:name="com.darrenai.jarvis.ui.dashboard.DashboardFragment"
-        android:label="@string/nav_dashboard"
+        android:label="Dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/nav_chat"
         android:name="com.darrenai.jarvis.ui.chat.ChatFragment"
-        android:label="@string/nav_chat"
+        android:label="Chat"
         tools:layout="@layout/fragment_chat" />
 
     <fragment
         android:id="@+id/nav_voice"
         android:name="com.darrenai.jarvis.ui.voice.VoiceFragment"
-        android:label="@string/nav_voice"
+        android:label="Voice"
         tools:layout="@layout/fragment_voice" />
 
     <fragment
         android:id="@+id/nav_schedule"
         android:name="com.darrenai.jarvis.ui.schedule.ScheduleFragment"
-        android:label="@string/nav_schedule"
+        android:label="Schedule"
         tools:layout="@layout/fragment_schedule" />
 
     <fragment
         android:id="@+id/nav_library"
         android:name="com.darrenai.jarvis.ui.library.LibraryFragment"
-        android:label="@string/nav_library"
+        android:label="Library"
         tools:layout="@layout/fragment_library" />
 </navigation>

@@ -2,75 +2,146 @@ package com.darrenai.jarvis
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.darrenai.jarvis.ai.AiService
-import com.darrenai.jarvis.ai.HermesProvider
-import com.darrenai.jarvis.ui.settings.SettingsActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.chip.Chip
+import com.darrenai.jarvis.ai.AiProvider
+import com.darrenai.jarvis.ai.StreamEvent
+import com.darrenai.jarvis.model.ChatMessage
+import com.darrenai.jarvis.services.JarvisVoiceService
+import com.darrenai.jarvis.ui.face.FaceActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), JarvisVoiceService.VoiceCallback {
 
-    private lateinit var navController: NavController
-    private lateinit var aiService: AiService
-    private lateinit var hermesProvider: HermesProvider
+    private var voiceService: JarvisVoiceService? = null
+    private var isListening = false
+    private var isSpeaking = false
+    private var currentResponse = StringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize AI service (singleton)
-        aiService = AiService.getInstance(this)
-        hermesProvider = HermesProvider(this)
+        voiceService = JarvisVoiceService.getInstance(this)
 
-        // Setup navigation
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
+        // FAB: toggle listening
+        findViewById<FloatingActionButton>(R.id.fab_voice_main)
+            .setOnClickListener {
+                if (isListening) stopListening()
+                else startListening()
+            }
 
-        // Bottom nav
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
-        bottomNav.setupWithNavController(navController)
+        // FAB: toggle face visualizer
+        findViewById<FloatingActionButton>(R.id.fab_face)
+            .setOnClickListener {
+                FaceActivity.show(this)
+            }
 
-        // Setup toolbar
-        val appBarConfig = AppBarConfiguration(
-            topLevelDestinationIds = setOf(
-                R.id.nav_dashboard,
-                R.id.nav_chat,
-                R.id.nav_voice,
-                R.id.nav_schedule,
-                R.id.nav_library
-            )
-        )
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig)
-        supportActionBar?.hide()
+        // Face toggle in action mode (top-right)
+        findViewById<android.widget.ImageButton>(R.id.btn_face_toggle)
+            .setOnClickListener {
+                FaceActivity.show(this)
+            }
+    }
 
-        // Settings button
-        findViewById<android.widget.ImageButton>(R.id.btn_settings_top).setOnClickListener {
-            val intent = android.content.Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
+    private fun startListening() {
+        isListening = true
+        updateUI()
+        FaceActivity.setState("listening", 0.3f, 0.2f)
+        voiceService?.startListening(this@MainActivity)
+    }
+
+    private fun stopListening() {
+        isListening = false
+        voiceService?.stopListening()
+        updateUI()
+    }
+
+    private fun updateUI() {
+        val fab = findViewById<FloatingActionButton>(R.id.fab_voice_main)
+        val status = findViewById<android.widget.TextView>(R.id.txt_main_status)
+        val ring = findViewById<android.view.View>(R.id.voice_ring_outer)
+        val waveform = findViewById<android.widget.LinearLayout>(R.id.layout_voice_waveform)
+        val transcriptScroll = findViewById<android.widget.ScrollView>(R.id.scroll_transcript)
+
+        if (isListening) {
+            fab.setImageResource(R.drawable.ic_mic_active)
+            status.text = getString(R.string.voice_listening)
+            ring.alpha = 0.6f
+            waveform.visibility = android.view.View.VISIBLE
+            transcriptScroll.visibility = android.view.View.VISIBLE
+        } else {
+            fab.setImageResource(R.drawable.ic_mic)
+            status.text = getString(R.string.voice_tap_to_speak)
+            ring.alpha = 0.3f
+            waveform.visibility = android.view.View.GONE
         }
-
-        // Update connection status
-        updateConnectionStatus()
     }
 
-    private fun updateConnectionStatus() {
-        val txtMode = findViewById<android.widget.TextView>(R.id.txt_mode_status)
-        val chipProvider = findViewById<Chip>(R.id.chip_provider)
+    // ---- VoiceCallback ----
+    override fun onVoiceResult(text: String) {
+        findViewById<android.widget.TextView>(R.id.txt_user_transcript).apply {
+            this.text = text
+            visibility = android.view.View.VISIBLE
+        }
+        findViewById<android.widget.TextView>(R.id.txt_main_status).text = getString(R.string.voice_processing)
+        FaceActivity.setState("thinking", 0.6f, 0.4f)
 
-        val isOnline = hermesProvider.isOnlineMode()
-        val providerName = hermesProvider.getProviderName()
-
-        txtMode.text = if (isOnline) "Online" else "Offline"
-        chipProvider.text = providerName
+        currentResponse = StringBuilder()
+        val history = listOf(
+            ChatMessage(ChatMessage.Role.USER, text)
+        )
+        android.os.Handler(android.os.Looper.getMainLooper()).post {
+            AiService.getInstance(this@MainActivity)
+                .chat(history, AiProvider.Hermes) { event ->
+                    when (event) {
+                        is StreamEvent.Delta -> {
+                            currentResponse.append(event.text)
+                        }
+                        is StreamEvent.Done -> {
+                            isSpeaking = true
+                            FaceActivity.setState("speaking", 0.8f, 0.6f)
+                            voiceService?.speak(currentResponse.toString()) {
+                                isSpeaking = false
+                                FaceActivity.setState("idle", 0f, 0f)
+                                findViewById<android.widget.TextView>(R.id.txt_main_status)
+                                    .text = getString(R.string.voice_tap_to_speak)
+                            }
+                            findViewById<android.widget.TextView>(R.id.txt_jarvis_response).apply {
+                                this.text = currentResponse.toString()
+                                visibility = android.view.View.VISIBLE
+                            }
+                        }
+                        is StreamEvent.Error -> {
+                            FaceActivity.setState("idle", 0f, 0f)
+                            findViewById<android.widget.TextView>(R.id.txt_jarvis_response).apply {
+                                this.text = "⚠️ ${event.error.message}"
+                                visibility = android.view.View.VISIBLE
+                            }
+                            findViewById<android.widget.TextView>(R.id.txt_main_status)
+                                .text = getString(R.string.voice_tap_to_speak)
+                        }
+                        else -> {}
+                    }
+                }
+        }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+    override fun onVoiceError(error: String) {
+        FaceActivity.setState("idle", 0f, 0f)
+        findViewById<android.widget.TextView>(R.id.txt_main_status).text = error
+        isListening = false
+        updateUI()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        voiceService?.stopListening()
+        voiceService?.shutdown()
+        FaceActivity.setState("idle", 0f, 0f)
     }
 }

@@ -46,7 +46,7 @@ class AiService private constructor(
         preferredProvider: AiProvider? = null,
         onEvent: (StreamEvent) -> Unit
     ) {
-        val target = preferredProvider ?: prefs.selectedProvider
+        val target = preferredProvider ?: AiProvider.fromId(prefs.getProvider())
         scope.launch {
             val chain = buildFallbackChain(target)
             var lastError: AiError? = null
@@ -83,8 +83,8 @@ class AiService private constructor(
     /**
      * Auto-detect available models on the local server.
      */
-    suspend fun detectLocalModels(endpoint: String = prefs.localEndpoint): List<String> {
-        val localProvider = LocalAiProvider(endpoint = endpoint, model = prefs.localModel)
+    suspend fun detectLocalModels(endpoint: String = prefs.getLocalEndpoint()): List<String> {
+     val localProvider = LocalAiProvider(endpoint = endpoint, model = prefs.getLocalModel())
         return localProvider.detectModels()
     }
 
@@ -94,7 +94,7 @@ class AiService private constructor(
     fun availableProviders(): List<AiProvider> {
         val list = mutableListOf<AiProvider>()
 
-        if (prefs.openAiApiKey.isNotBlank()) list.add(AiProvider.OpenAI)
+        if (prefs.getApiKey().isNotBlank()) list.add(AiProvider.OpenAI)
         // Local is always listed — user may configure it after first launch
         list.add(AiProvider.Local)
         // Hermes is always listed
@@ -185,12 +185,12 @@ class AiService private constructor(
         return providers.getOrPut(provider.id) {
             when (provider) {
                 AiProvider.OpenAI -> OpenAiProvider(
-                    apiKey = prefs.openAiApiKey,
-                    model = prefs.openAiModel
+                    apiKey = prefs.getApiKey(),
+                    model = prefs.getOpenaiModel()
                 )
                 AiProvider.Local -> LocalAiProvider(
-                    endpoint = prefs.localEndpoint,
-                    model = prefs.localModel
+                    endpoint = prefs.getLocalEndpoint(),
+                    model = prefs.getLocalModel()
                 )
                 AiProvider.Hermes -> HermesProvider(context)
             }

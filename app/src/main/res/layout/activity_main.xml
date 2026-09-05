@@ -2,138 +2,197 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/jarvis_window_background"
-    android:fitsSystemWindows="false">
+    android:background="@color/jarvis_window_background">
 
-    <!-- Top Bar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/toolbar_height"
-        android:background="@drawable/bg_status_gradient"
-        app:contentInsetStart="0dp"
+    <!-- Status text -->
+    <TextView
+        android:id="@+id/txt_main_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:text="@string/voice_tap_to_speak"
+        android:textColor="@color/jarvis_text_secondary"
+        android:textSize="16sp"
+        android:letterSpacing="0.15"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Arc Reactor Voice Button -->
+    <FrameLayout
+        android:id="@+id/voice_reactor_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/txt_main_status"
+        app:layout_constraintBottom_toTopOf="@id/scroll_transcript"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="48dp">
+
+        <!-- Outer glow ring -->
+        <View
+            android:id="@+id/voice_ring_outer"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:background="@drawable/arc_reactor_bg"
+            android:alpha="0.3" />
+
+        <!-- Middle ring -->
+        <View
+            android:id="@+id/voice_ring_middle"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_gravity="center"
+            android:background="@drawable/arc_reactor_bg"
+            android:alpha="0.5" />
+
+        <!-- FAB mic button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_voice_main"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/voice_tap_to_speak"
+            android:src="@drawable/ic_mic"
+            app:backgroundTint="@color/jarvis_accent"
+            app:tint="@color/jarvis_window_background"
+            app:elevation="0dp"
+            app:borderWidth="0dp" />
+    </FrameLayout>
+
+    <!-- Waveform bars -->
+    <LinearLayout
+        android:id="@+id/layout_voice_waveform"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginHorizontal="32dp"
+        app:layout_constraintTop_toTopOf="@id/voice_reactor_container"
+        app:layout_constraintBottom_toBottomOf="@id/voice_reactor_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="@dimen/spacing_md">
+        <View android:id="@+id/wave_bar_1"  android:layout_width="3dp" android:layout_height="20dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_2"  android:layout_width="3dp" android:layout_height="36dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_3"  android:layout_width="3dp" android:layout_height="52dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_4"  android:layout_width="3dp" android:layout_height="28dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_5"  android:layout_width="3dp" android:layout_height="48dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_6"  android:layout_width="3dp" android:layout_height="32dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_7"  android:layout_width="3dp" android:layout_height="44dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_8"  android:layout_width="3dp" android:layout_height="24dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_9"  android:layout_width="3dp" android:layout_height="50dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_10" android:layout_width="3dp" android:layout_height="36dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_11" android:layout_width="3dp" android:layout_height="20dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+        <View android:id="@+id/wave_bar_12" android:layout_width="3dp" android:layout_height="44dp" android:layout_marginHorizontal="2dp" android:background="@drawable/arc_reactor_core" />
+    </LinearLayout>
 
-            <!-- Status dot + App title -->
-            <LinearLayout
-                android:id="@+id/title_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <View
-                    android:id="@+id/view_status_dot"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:background="@drawable/arc_reactor_core" />
-
-                <TextView
-                    android:id="@+id/txt_app_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_sm"
-                    android:text="@string/app_name"
-                    style="@style/JARVIS_AppTitle" />
-            </LinearLayout>
-
-            <!-- Connection status -->
-            <TextView
-                android:id="@+id/txt_mode_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/spacing_sm"
-                android:text="Connecting..."
-                android:textColor="@color/jarvis_text_secondary"
-                android:textSize="@dimen/text_caption"
-                app:layout_constraintTop_toTopOf="@id/title_group"
-                app:layout_constraintBottom_toBottomOf="@id/title_group"
-                app:layout_constraintStart_toEndOf="@id/title_group" />
-
-            <!-- Provider chip -->
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_provider"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/spacing_sm"
-                android:text="Hermes"
-                android:textColor="@color/jarvis_text_primary"
-                android:textSize="@dimen/text_caption"
-                app:chipIcon="@drawable/ic_server"
-                app:chipIconTint="@color/jarvis_accent"
-                app:chipBackgroundColor="@color/jarvis_chip_background"
-                app:chipCornerRadius="@dimen/corner_pill"
-                app:ensureMinTouchTargetSize="false"
-                app:layout_constraintTop_toTopOf="@id/title_group"
-                app:layout_constraintBottom_toBottomOf="@id/title_group"
-                app:layout_constraintStart_toEndOf="@id/txt_mode_status" />
-
-            <!-- Settings button -->
-            <ImageButton
-                android:id="@+id/btn_settings_top"
-                android:layout_width="@dimen/btn_height_md"
-                android:layout_height="@dimen/btn_height_md"
-                android:background="@drawable/bg_icon_button"
-                android:src="@drawable/ic_settings"
-                android:scaleType="centerInside"
-                android:padding="@dimen/spacing_sm"
-                android:contentDescription="Settings"
-                app:tint="@color/jarvis_text_secondary"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.appbar.MaterialToolbar>
-
-    <!-- Toolbar divider -->
-    <View
-        android:id="@+id/toolbar_divider"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/divider_height"
-        android:background="@color/jarvis_divider"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Fragment host -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.NavHostFragment"
+    <!-- Transcript scroll area -->
+    <ScrollView
+        android:id="@+id/scroll_transcript"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_divider"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="24dp"
+        android:fillViewport="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/voice_reactor_container"
+        app:layout_constraintBottom_toTopOf="@id/footer_credit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_user_transcript"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                android:background="@drawable/bg_chat_bubble_user"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:textColor="@color/jarvis_window_background"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/txt_jarvis_response"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                android:background="@drawable/bg_chat_bubble_jarvis"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:textColor="@color/jarvis_text_primary"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Face toggle (top-right) -->
+    <ImageButton
+        android:id="@+id/btn_face_toggle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_face"
+        android:contentDescription="@string/face_visualizer"
+        android:tint="@color/jarvis_text_secondary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <!-- Footer credit -->
+    <TextView
+        android:id="@+id/footer_credit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JARVIS v1.0.0"
+        android:textColor="@color/jarvis_text_hint"
+        android:textSize="10sp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Face FAB (bottom-right) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_face"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/face_visualizer"
+        android:src="@drawable/ic_face"
+        app:backgroundTint="@color/jarvis_accent_dark"
+        app:tint="@color/jarvis_window_background"
+        app:fabSize="normal"
+        app:layout_anchor="@id/voice_reactor_container"
+        app:layout_anchorGravity="bottom|end" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="0dp"
-        android:layout_height="@dimen/nav_height"
-        android:background="@color/jarvis_nav_background"
+        android:layout_height="wrap_content"
+        android:background="@color/jarvis_surface"
         app:itemIconTint="@color/jarvis_nav_item_active"
-        app:itemTextColor="@color/jarvis_nav_item_active"
+        app:itemTextColor="@color/jarvis_nav_item_inactive"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

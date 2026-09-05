@@ -32,13 +32,19 @@ data class ChatCompletionResponse(
 object HttpClient {
     private val gson = Gson()
 
-    fun <T> post(url: String, responseClass: Class<T>, body: Any): T? {
+    fun <T> post(
+        url: String,
+        responseClass: Class<T>,
+        body: Any,
+        connectTimeoutMs: Int = 15000,
+        readTimeoutMs: Int = 30000
+    ): T? {
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             setRequestProperty("Content-Type", "application/json")
             doOutput = true
-            connectTimeout = 15000
-            readTimeout = 30000
+            connectTimeout = connectTimeoutMs
+            readTimeout = readTimeoutMs
         }
         return try {
             val jsonBody = gson.toJson(body)

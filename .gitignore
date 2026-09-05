@@ -7,3 +7,5 @@ local.properties
 *.aab
 *.keystore
 *.jks
+gradle-8.5/
+gradle.zip

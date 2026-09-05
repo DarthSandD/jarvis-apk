@@ -36,6 +36,13 @@
             android:label="Settings"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".ui.face.FaceActivity"
+            android:exported="false"
+            android:label="Jarvis Face"
+            android:theme="@style/Theme.JARVIS"
+            android:parentActivityName=".MainActivity" />
+
         <service
             android:name=".services.JarvisVoiceService"
             android:exported="false"

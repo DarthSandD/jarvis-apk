@@ -1,0 +1,74 @@
+Starting a Gradle Daemon, 1 busy Daemon could not be reused, use --status for details
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugAssets
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:compressDebugAssets
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:processDebugResources
+> Task :app:processDebugResources FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:processDebugResources'.
+> A failure occurred while executing com.android.build.gradle.internal.res.LinkApplicationAndroidResourcesTask$TaskAction
+   > Android resource linking failed
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/activity_main.xml:108: error: resource id/footer_credit (aka com.darrenai.jarvis:id/footer_credit) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/activity_main.xml:168: error: resource color/jarvis_accent_dark (aka com.darrenai.jarvis:color/jarvis_accent_dark) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_chat.xml:70: error: resource string/chat_empty_title (aka com.darrenai.jarvis:string/chat_empty_title) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_chat.xml:77: error: resource string/chat_empty_subtitle (aka com.darrenai.jarvis:string/chat_empty_subtitle) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_chat.xml:168: error: resource string/chat_hint (aka com.darrenai.jarvis:string/chat_hint) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:71: error: resource string/dash_system_status (aka com.darrenai.jarvis:string/dash_system_status) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:101: error: resource string/dash_cpu (aka com.darrenai.jarvis:string/dash_cpu) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:145: error: resource string/dash_ram (aka com.darrenai.jarvis:string/dash_ram) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:187: error: resource string/dash_battery (aka com.darrenai.jarvis:string/dash_battery) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:215: error: resource string/dash_agent_workload (aka com.darrenai.jarvis:string/dash_agent_workload) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:250: error: resource string/dash_quick_actions (aka com.darrenai.jarvis:string/dash_quick_actions) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:273: error: resource string/action_morning_briefing (aka com.darrenai.jarvis:string/action_morning_briefing) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:290: error: resource string/action_health_check (aka com.darrenai.jarvis:string/action_health_check) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:313: error: resource string/action_status_report (aka com.darrenai.jarvis:string/action_status_report) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_dashboard.xml:329: error: resource string/action_gateway_watch (aka com.darrenai.jarvis:string/action_gateway_watch) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_library.xml:28: error: resource string/library_title (aka com.darrenai.jarvis:string/library_title) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_library.xml:86: error: resource string/library_empty (aka com.darrenai.jarvis:string/library_empty) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_schedule.xml:28: error: resource string/schedule_title (aka com.darrenai.jarvis:string/schedule_title) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_schedule.xml:43: error: resource string/schedule_refresh (aka com.darrenai.jarvis:string/schedule_refresh) not found.
+     com.darrenai.jarvis.app-mergeDebugResources-3:/layout/fragment_schedule.xml:88: error: resource string/schedule_empty (aka com.darrenai.jarvis:string/schedule_empty) not found.
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 4m 7s
+26 actionable tasks: 4 executed, 22 up-to-date
