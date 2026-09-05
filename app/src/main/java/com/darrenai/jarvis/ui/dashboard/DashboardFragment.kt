@@ -112,9 +112,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun triggerAction(prompt: String) {
-        // Navigate to chat with the prompt pre-filled
-        val action = DashboardFragmentDirections.actionNavDashboardToNavChat(prompt)
-        // For now, just switch to chat tab
+        // Navigate to chat tab via BottomNavigationView
         (activity as? androidx.appcompat.app.AppCompatActivity)?.let { app ->
             val bottomNav = app.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
             bottomNav.selectedItemId = R.id.nav_chat

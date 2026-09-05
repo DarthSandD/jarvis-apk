@@ -18,10 +18,6 @@ import com.darrenai.jarvis.R
  * voice/chat state from Kotlin via JavaScript interface.
  *
  * State values: "idle" | "listening" | "thinking" | "speaking"
- *
- * Usage from any context:
- *   FaceActivity.show(context)
- *   FaceActivity.setState("speaking", 0.7f, 0.5f)
  */
 class FaceActivity : Activity() {
 
@@ -44,13 +40,6 @@ class FaceActivity : Activity() {
         fun setState(state: String, level: Float = 0f, env: Float = 0f) {
             instance?.setStateInternal(state, level, env)
         }
-
-        /** Set the display name shown on the chip. */
-        fun setName(name: String) {
-            instance?.webView?.evaluateJavascript(
-                "window.__faceState.name = '$name'; " +
-                "if (window.AV && window.AV.name !== undefined) { window.AV.name = '$name'; }", null)
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +47,7 @@ class FaceActivity : Activity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        // Immersive: hide status bar and navigation bar
+        @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = (
                 android.view.View.SYSTEM_UI_FLAG_FULLSCREEN or
                 android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
@@ -75,6 +64,8 @@ class FaceActivity : Activity() {
                 setSupportZoom(false)
                 cacheMode = WebSettings.LOAD_NO_CACHE
                 mediaPlaybackRequiresUserGesture = false
+                allowFileAccess = true
+                allowContentAccess = true
             }
             webChromeClient = WebChromeClient()
             webViewClient = WebViewClient()
@@ -90,9 +81,6 @@ class FaceActivity : Activity() {
         super.onResume()
         paused = false
         webView.onResume()
-        webView.evaluateJavascript(
-            "if (window.audio && window.audio.context && window.audio.context.state === 'suspended') {" +
-            "window.audio.context.resume(); }", null)
     }
 
     override fun onPause() {
@@ -118,17 +106,14 @@ class FaceActivity : Activity() {
     inner class FaceBridge {
         @JavascriptInterface
         fun setState(state: String, level: Double, env: Double): String {
-            webView.evaluateJavascript("window.__faceState = { state: '$state', level: $level, env: $env }", null)
+            webView.evaluateJavascript(
+                "window.__faceState = { state: '$state', level: $level, env: $env }", null)
             return "ok"
         }
 
         @JavascriptInterface
         fun now(): String {
-            var result = "{}"
-            webView.evaluateJavascript("JSON.stringify(window.__faceState || {})") { jsResult ->
-                result = jsResult ?: "{}"
-            }
-            return result
+            return "{}"
         }
     }
 }

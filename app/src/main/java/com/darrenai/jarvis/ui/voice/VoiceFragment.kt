@@ -158,6 +158,7 @@ class VoiceFragment : Fragment(), JarvisVoiceService.VoiceCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         voiceService.stopListening()
-        voiceService.shutdown()
+        // Do NOT call shutdown() here — it destroys the singleton
+        // and the service is reused across tab switches
     }
 }
