@@ -24,7 +24,7 @@ class HermesProvider(private val context: Context) : IProvider {
     override val maxTokens: Int = 1024
 
     companion object {
-        private const val DEFAULT_ENDPOINT = "http://10.212.104.140:20128/v1/chat/completions"
+        private const val DEFAULT_ENDPOINT = "http://10.212.104.124:20128/v1/chat/completions"
         private const val DEFAULT_API_KEY = ""
         private const val CRON_ENDPOINT = "http://192.168.1.100:20128/v1/cron"
         const val JARVIS_SYSTEM_PROMPT = """You are JARVIS, Darren Lieu's AI chief of staff.

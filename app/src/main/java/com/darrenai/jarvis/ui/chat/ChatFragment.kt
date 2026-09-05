@@ -47,14 +47,10 @@ class ChatFragment : Fragment() {
         }
         recyclerView.adapter = chatAdapter
 
-        // Check for pre-filled prompt from dashboard
-        try {
-            val args = ChatFragmentArgs.fromBundle(requireArguments())
-            if (args.prompt.isNotEmpty()) {
-                sendMessage(view, args.prompt)
-            }
-        } catch (e: Exception) {
-            // No arguments — fresh chat
+        // Check for pre-filled prompt from dashboard (Safe Args may not be present)
+        val args = try { ChatFragmentArgs.fromBundle(requireArguments()) } catch (e: Exception) { null }
+        if (args != null && args.prompt.isNotEmpty()) {
+            sendMessage(view, args.prompt)
         }
 
         // Empty state
