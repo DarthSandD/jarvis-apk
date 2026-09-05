@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Window background -->
-    <color name="jarvis_window_background">#08090D</color>
-    <color name="jarvis_surface">#101218</color>
-    <color name="jarvis_surface_elevated">#181B22</color>
+    <color name="jarvis_window_background">#0A0D13</color>
+    <color name="jarvis_surface">#12161F</color>
+    <color name="jarvis_surface_elevated">#181E2A</color>
     <color name="jarvis_surface_glass">#1A1D24</color>
 
     <!-- Accent (Arc Reactor Blue) -->
     <color name="jarvis_accent">#00D4FF</color>
     <color name="jarvis_accent_dim">#007A99</color>
     <color name="jarvis_accent_glow">#00D4FF</color>
+
+    <!-- Secondary (violet, Figma-style gradient pair) -->
+    <color name="jarvis_violet">#7C4DFF</color>
+    <color name="jarvis_violet_dim">#3A2A80</color>
+
+    <!-- Cards & inputs -->
+    <color name="jarvis_card">#141925</color>
+    <color name="jarvis_input">#1B2231</color>
 
     <!-- Gold (warnings, secondary accent) -->
     <color name="jarvis_gold">#FFB300</color>
@@ -21,20 +29,20 @@
     <color name="jarvis_online_dim">#00824A</color>
 
     <!-- Text -->
-    <color name="jarvis_text_primary">#F0F2F5</color>
-    <color name="jarvis_text_secondary">#A0A5AD</color>
-    <color name="jarvis_text_hint">#6B7280</color>
+    <color name="jarvis_text_primary">#F2F4F8</color>
+    <color name="jarvis_text_secondary">#9AA3B2</color>
+    <color name="jarvis_text_hint">#626B7D</color>
 
     <!-- Dividers -->
-    <color name="jarvis_divider">#252830</color>
+    <color name="jarvis_divider">#232A3A</color>
 
     <!-- Chips -->
-    <color name="jarvis_chip_background">#1A1D24</color>
+    <color name="jarvis_chip_background">#1A2130</color>
 
     <!-- Navigation -->
-    <color name="jarvis_nav_background">#08090D</color>
+    <color name="jarvis_nav_background">#0A0D13</color>
     <color name="jarvis_nav_item_active">#00D4FF</color>
-    <color name="jarvis_nav_item_inactive">#6B7280</color>
+    <color name="jarvis_nav_item_inactive">#626B7D</color>
 
     <!-- Agent colors -->
     <color name="agent_jarvis">#00D4FF</color>
@@ -47,13 +55,13 @@
     <color name="black">#000000</color>
 
     <!-- Launcher icon background -->
-    <color name="jarvis_black">#08090D</color>
+    <color name="jarvis_black">#0A0D13</color>
 
     <!-- Accent (dark variant) -->
     <color name="jarvis_accent_dark">#003355</color>
 
     <!-- Legacy compat -->
     <color name="colorPrimary">#00D4FF</color>
-    <color name="colorPrimaryDark">#08090D</color>
+    <color name="colorPrimaryDark">#0A0D13</color>
     <color name="colorAccent">#00D4FF</color>
 </resources>

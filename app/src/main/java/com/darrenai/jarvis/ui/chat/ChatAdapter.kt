@@ -17,6 +17,8 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
         val txtUser: TextView = view.findViewById(R.id.txt_user_message)
         val txtJarvis: TextView = view.findViewById(R.id.txt_jarvis_message)
         val txtAgentName: TextView = view.findViewById(R.id.txt_agent_name)
+        val txtUserTime: TextView = view.findViewById(R.id.txt_user_time)
+        val txtJarvisTime: TextView = view.findViewById(R.id.txt_jarvis_time)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
@@ -31,11 +33,13 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
             holder.layoutUser.visibility = View.VISIBLE
             holder.layoutJarvis.visibility = View.GONE
             holder.txtUser.text = msg.text
+            holder.txtUserTime.text = msg.timeLabel()
         } else {
             holder.layoutUser.visibility = View.GONE
             holder.layoutJarvis.visibility = View.VISIBLE
             holder.txtJarvis.text = msg.text
             holder.txtAgentName.text = "JARVIS"
+            holder.txtJarvisTime.text = msg.timeLabel()
         }
     }
 

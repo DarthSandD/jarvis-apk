@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/spacing_sm">
+    android:paddingBottom="10dp">
 
     <!-- User message (right-aligned) -->
     <LinearLayout
@@ -11,18 +11,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/txt_user_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_xxl"
+            android:layout_gravity="end"
+            android:layout_marginStart="64dp"
             android:background="@drawable/bg_chat_bubble_user"
-            android:paddingHorizontal="@dimen/spacing_md"
-            android:paddingVertical="@dimen/spacing_sm"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
             android:textColor="@color/jarvis_window_background"
-            android:textSize="@dimen/text_chat" />
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/txt_user_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="4dp"
+            android:textColor="@color/jarvis_text_hint"
+            android:textSize="10sp" />
     </LinearLayout>
 
     <!-- JARVIS message (left-aligned) -->
@@ -39,7 +51,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/spacing_xs">
+            android:layout_marginBottom="4dp">
 
             <View
                 android:layout_width="6dp"
@@ -50,22 +62,32 @@
                 android:id="@+id/txt_agent_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/spacing_xs"
+                android:layout_marginStart="6dp"
                 android:text="JARVIS"
                 android:textColor="@color/jarvis_accent"
-                android:textSize="@dimen/text_caption"
-                android:fontFamily="sans-serif-medium" />
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.08" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/txt_jarvis_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spacing_xxl"
+            android:layout_marginEnd="64dp"
             android:background="@drawable/bg_chat_bubble_jarvis"
-            android:paddingHorizontal="@dimen/spacing_md"
-            android:paddingVertical="@dimen/spacing_sm"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
             android:textColor="@color/jarvis_text_primary"
-            android:textSize="@dimen/text_chat" />
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/txt_jarvis_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="4dp"
+            android:textColor="@color/jarvis_text_hint"
+            android:textSize="10sp" />
     </LinearLayout>
 </LinearLayout>

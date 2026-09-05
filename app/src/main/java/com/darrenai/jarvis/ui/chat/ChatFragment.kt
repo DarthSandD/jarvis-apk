@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,10 +37,9 @@ class ChatFragment : Fragment() {
         try {
             aiService = AiService.getInstance(requireContext())
 
-            // Setup agent selector chips
             setupAgentChips(view)
+            setupSuggestions(view)
 
-            // Setup RecyclerView
             chatAdapter = ChatAdapter(messages)
             val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_chat)
             recyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
@@ -47,10 +47,8 @@ class ChatFragment : Fragment() {
             }
             recyclerView.adapter = chatAdapter
 
-            // Empty state
             updateEmptyState(view)
 
-            // Input bar
             val editMessage = view.findViewById<android.widget.EditText>(R.id.edit_message)
             val btnSend = view.findViewById<ImageButton>(R.id.btn_send)
 
@@ -62,7 +60,6 @@ class ChatFragment : Fragment() {
                 }
             }
 
-            // Voice button — navigate to voice tab
             view.findViewById<ImageButton>(R.id.btn_voice).setOnClickListener {
                 (activity as? androidx.appcompat.app.AppCompatActivity)?.let { app ->
                     val bottomNav = app.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
@@ -70,10 +67,9 @@ class ChatFragment : Fragment() {
                 }
             }
         } catch (e: Exception) {
-            // Never crash the tab — surface the error in the empty state.
             runCatching {
                 view.findViewById<View>(R.id.empty_state)?.visibility = View.VISIBLE
-                view.findViewById<android.widget.TextView>(R.id.txt_chat_error)?.apply {
+                view.findViewById<TextView>(R.id.txt_chat_error)?.apply {
                     text = "Couldn't start chat: ${e.message}"
                     visibility = View.VISIBLE
                 }
@@ -97,14 +93,36 @@ class ChatFragment : Fragment() {
         }
     }
 
+    private fun setupSuggestions(view: View) {
+        val group = view.findViewById<ChipGroup>(R.id.chip_group_suggest) ?: return
+        val prompts = listOf(
+            "Morning briefing",
+            "System status",
+            "What can you do?"
+        )
+        for (p in prompts) {
+            val chip = Chip(requireContext())
+            chip.text = p
+            chip.isCheckable = false
+            chip.setOnClickListener { sendMessage(view, p) }
+            group.addView(chip)
+        }
+    }
+
+    private fun setTyping(view: View, typing: Boolean) {
+        runCatching {
+            view.findViewById<View>(R.id.txt_typing)?.visibility =
+                if (typing) View.VISIBLE else View.GONE
+        }
+    }
+
     private fun sendMessage(view: View, text: String) {
-        // Add user message
         messages.add(ChatMessage(text, true))
         runCatching { chatAdapter.notifyItemInserted(messages.size - 1) }
         updateEmptyState(view)
         scrollToBottom(view)
+        setTyping(view, true)
 
-        // Get AI response via streaming chat
         val history = messages.map {
             com.darrenai.jarvis.model.ChatMessage(
                 if (it.isUser) com.darrenai.jarvis.model.ChatMessage.Role.USER
@@ -117,7 +135,6 @@ class ChatFragment : Fragment() {
                 if (!isAdded) return@chat
                 when (event) {
                     is com.darrenai.jarvis.ai.StreamEvent.Delta -> {
-                        // Update or append the assistant message
                         val lastIdx = messages.size - 1
                         if (lastIdx >= 0 && !messages[lastIdx].isUser) {
                             messages[lastIdx] = ChatMessage(
@@ -131,9 +148,10 @@ class ChatFragment : Fragment() {
                         scrollToBottom(view)
                     }
                     is com.darrenai.jarvis.ai.StreamEvent.Done -> {
-                        // Final text already shown via Delta
+                        setTyping(view, false)
                     }
                     is com.darrenai.jarvis.ai.StreamEvent.Error -> {
+                        setTyping(view, false)
                         messages.add(ChatMessage("⚠️ ${event.error.message}", false))
                         runCatching { chatAdapter.notifyItemInserted(messages.size - 1) }
                         scrollToBottom(view)
@@ -148,6 +166,8 @@ class ChatFragment : Fragment() {
         runCatching {
             val emptyState = view.findViewById<View>(R.id.empty_state)
             emptyState.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
+            view.findViewById<ChipGroup>(R.id.chip_group_suggest)?.visibility =
+                if (messages.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 

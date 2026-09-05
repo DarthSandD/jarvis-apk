@@ -1,19 +1,22 @@
 package com.darrenai.jarvis.ui.dashboard
 
-import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.darrenai.jarvis.R
+import com.darrenai.jarvis.ai.AiProvider
+import com.darrenai.jarvis.ai.AiService
+import com.darrenai.jarvis.ai.HermesProvider
+import com.darrenai.jarvis.ui.face.ArcReactorView
+import com.darrenai.jarvis.ui.face.FaceActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 
 class DashboardFragment : Fragment() {
 
@@ -28,95 +31,66 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Animate arc reactor pulse
-        val arcReactor = view.findViewById<View>(R.id.arc_reactor)
-        val pulseAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.arc_reactor_pulse)
-        arcReactor.startAnimation(pulseAnim)
+        // Greeting by time of day
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        val greeting = when (hour) {
+            in 5..11 -> "Good morning"
+            in 12..17 -> "Good afternoon"
+            else -> "Good evening"
+        }
+        view.findViewById<TextView>(R.id.txt_home_greeting)?.text = "$greeting, Boss"
 
-        // Load system metrics
-        loadSystemMetrics(view)
-
-        // Quick action buttons
-        view.findViewById<View>(R.id.btn_morning_briefing).setOnClickListener {
-            // Trigger morning briefing via AI service
-            triggerAction("Give me the morning briefing")
+        // Hero orb idles gently
+        view.findViewById<ArcReactorView>(R.id.home_orb)?.apply {
+            setState(ArcReactorView.State.IDLE)
+            setLevel(0.15f)
         }
 
-        view.findViewById<View>(R.id.btn_health_check).setOnClickListener {
-            triggerAction("Run a health check on all systems")
-        }
-
-        view.findViewById<View>(R.id.btn_status_report).setOnClickListener {
-            triggerAction("Generate a status report")
-        }
-
-        view.findViewById<View>(R.id.btn_gateway_watch).setOnClickListener {
-            triggerAction("Check gateway status")
-        }
-
-        // Load agent workload
-        loadAgentWorkload(view)
-    }
-
-    private fun loadSystemMetrics(view: View) {
+        // Endpoint + latency check
+        val aiService = AiService.getInstance(requireContext())
+        val latencyView = view.findViewById<TextView>(R.id.txt_home_latency)
+        val dotView = view.findViewById<TextView>(R.id.txt_home_status_dot)
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            // Simulate fetching system metrics from Hermes endpoint
-            // In production, this would hit http://<pc-ip>:20128/v1/ or a status endpoint
-            try {
-                val cpu = (10..45).random()
-                val ram = (30..65).random()
-                val battery = (70..100).random()
-                val uptimeHours = (1..72).random()
-
-                withContext(Dispatchers.Main) {
-                    view.findViewById<TextView>(R.id.txt_cpu_value).text = "${cpu}%"
-                    view.findViewById<ProgressBar>(R.id.progress_cpu).progress = cpu
-
-                    view.findViewById<TextView>(R.id.txt_ram_value).text = "${ram}%"
-                    view.findViewById<ProgressBar>(R.id.progress_ram).progress = ram
-
-                    view.findViewById<TextView>(R.id.txt_battery_value).text = "${battery}%"
-                    view.findViewById<ProgressBar>(R.id.progress_battery).progress = battery
-
-                    view.findViewById<TextView>(R.id.txt_uptime).text = "Uptime: ${uptimeHours}h"
-                }
+            val t0 = System.currentTimeMillis()
+            val err = try {
+                aiService.healthCheck(AiProvider.Hermes)
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    view.findViewById<TextView>(R.id.txt_system_status).text = "OFFLINE"
+                com.darrenai.jarvis.ai.AiError.NetworkError(e.message ?: "failed")
+            }
+            val ms = System.currentTimeMillis() - t0
+            withContext(Dispatchers.Main) {
+                if (!isAdded) return@withContext
+                if (err == null) {
+                    latencyView?.text = "Connected · ${ms}ms · darren-1212"
+                    dotView?.text = "● ONLINE"
+                    dotView?.setTextColor(resources.getColor(R.color.jarvis_online, null))
+                } else {
+                    latencyView?.text = "Unreachable — check Wi-Fi / Settings"
+                    dotView?.text = "● OFFLINE"
+                    dotView?.setTextColor(resources.getColor(R.color.jarvis_gold, null))
                 }
             }
         }
-    }
 
-    private fun loadAgentWorkload(view: View) {
-        val agents = listOf(
-            AgentInfo("JARVIS", "Active", R.color.agent_jarvis),
-            AgentInfo("Dev Agent", "Idle", R.color.agent_dev),
-            AgentInfo("Research", "Idle", R.color.agent_research),
-            AgentInfo("Assistant", "Active", R.color.agent_assistant)
-        )
-
-        val container = view.findViewById<android.widget.LinearLayout>(R.id.layout_agents)
-        container.removeAllViews()
-
-        for (agent in agents) {
-            val row = layoutInflater.inflate(R.layout.item_agent_row, container, false)
-            row.findViewById<TextView>(R.id.txt_agent_name).text = agent.name
-            row.findViewById<TextView>(R.id.txt_agent_status).text = agent.status
-            val dot = row.findViewById<View>(R.id.agent_status_dot)
-            dot.backgroundTintList = android.content.res.ColorStateList.valueOf(
-                resources.getColor(agent.colorRes, null)
-            )
-            container.addView(row)
+        // Quick actions
+        view.findViewById<View>(R.id.btn_home_talk)?.setOnClickListener {
+            selectTab(R.id.nav_voice)
+        }
+        view.findViewById<View>(R.id.btn_home_chat)?.setOnClickListener {
+            selectTab(R.id.nav_chat)
+        }
+        view.findViewById<View>(R.id.btn_home_face)?.setOnClickListener {
+            FaceActivity.show(requireContext())
+        }
+        view.findViewById<View>(R.id.btn_home_briefing)?.setOnClickListener {
+            selectTab(R.id.nav_chat)
         }
     }
 
-    private fun triggerAction(prompt: String) {
-        // Navigate to chat tab via BottomNavigationView
+    private fun selectTab(itemId: Int) {
         (activity as? androidx.appcompat.app.AppCompatActivity)?.let { app ->
-            val bottomNav = app.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
-            bottomNav.selectedItemId = R.id.nav_chat
+            app.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
+                ?.selectedItemId = itemId
         }
     }
-
 }
