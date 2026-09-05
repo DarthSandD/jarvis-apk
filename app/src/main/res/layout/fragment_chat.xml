@@ -75,6 +75,15 @@
             android:layout_marginTop="@dimen/spacing_xs"
             android:text="@string/chat_empty_subtitle"
             style="@style/JARVIS_Caption" />
+
+        <TextView
+            android:id="@+id/txt_chat_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:textColor="@color/jarvis_gold"
+            android:textSize="@dimen/text_caption"
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Voice Wave Indicator -->

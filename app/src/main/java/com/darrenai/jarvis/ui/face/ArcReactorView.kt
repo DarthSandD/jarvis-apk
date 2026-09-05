@@ -4,18 +4,29 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
+import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
+import kotlin.random.Random
 
 /**
- * Native Arc Reactor face visualizer.
- * Animates rings based on voice state: idle, listening, thinking, speaking.
+ * Native Arc Reactor face visualizer — circuit-board inspired.
+ *
+ * Layers (back to front):
+ * 1. Faint trace grid radiating from the center chip.
+ * 2. Rotating dashed orbit rings (opposite directions) + orbiting particles.
+ * 3. 48-bar waveform ring driven by voice level + animation phase.
+ * 4. Glowing core with state color.
+ * 5. Center chip plate labeled JARVIS + state text below.
+ *
+ * States mirror ai-visualizer: idle | listening | thinking | speaking.
  * No server needed — runs entirely on-device.
  */
 class ArcReactorView @JvmOverloads constructor(
@@ -27,38 +38,70 @@ class ArcReactorView @JvmOverloads constructor(
     enum class State { IDLE, LISTENING, THINKING, SPEAKING }
 
     private var state = State.IDLE
-    private var level = 0f
-    private var animPhase = 0f
+    private var targetLevel = 0f
+    private var smoothLevel = 0f
+    private var rotatePhase = 0f
+    private var pulsePhase = 0f
 
-    private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = 4f
+    private data class Trace(val angle: Float, val lenFrac: Float, val kink: Float)
+    private val traces: List<Trace> = List(36) { i ->
+        Trace(
+            angle = i * 10f + Random.nextFloat() * 4f,
+            lenFrac = 0.55f + Random.nextFloat() * 0.4f,
+            kink = (Random.nextFloat() - 0.5f) * 30f
+        )
     }
-    private val corePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
+    private data class Particle(val orbitFrac: Float, val speed: Float, val sizeFrac: Float, val dir: Float)
+    private val particles: List<Particle> = List(10) {
+        Particle(
+            orbitFrac = 0.78f + Random.nextFloat() * 0.3f,
+            speed = 20f + Random.nextFloat() * 40f,
+            sizeFrac = 0.012f + Random.nextFloat() * 0.014f,
+            dir = if (Random.nextBoolean()) 1f else -1f
+        )
     }
-    private val chipPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#00D4FF")
-        textSize = 28f
+
+    private val tracePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2f }
+    private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND }
+    private val corePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
+    private val chipPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
+    private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
+    private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
+        typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+    }
+    private val statePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
     }
 
-    private var animator: ValueAnimator? = null
+    private var rotateAnimator: ValueAnimator? = null
+    private var pulseAnimator: ValueAnimator? = null
 
     init {
         startAnimation()
     }
 
     private fun startAnimation() {
-        animator = ValueAnimator.ofFloat(0f, 360f).apply {
-            duration = 4000
+        rotateAnimator = ValueAnimator.ofFloat(0f, 360f).apply {
+            duration = 9000
             repeatCount = ValueAnimator.INFINITE
             interpolator = LinearInterpolator()
             addUpdateListener {
-                animPhase = it.animatedValue as Float
+                rotatePhase = it.animatedValue as Float
+                // Ease the level toward its target every frame.
+                smoothLevel += (targetLevel - smoothLevel) * 0.12f
+                invalidate()
+            }
+            start()
+        }
+        pulseAnimator = ValueAnimator.ofFloat(0f, 360f).apply {
+            duration = 1600
+            repeatCount = ValueAnimator.INFINITE
+            interpolator = LinearInterpolator()
+            addUpdateListener {
+                pulsePhase = it.animatedValue as Float
                 invalidate()
             }
             start()
@@ -71,135 +114,174 @@ class ArcReactorView @JvmOverloads constructor(
     }
 
     fun setLevel(newLevel: Float) {
-        level = newLevel
-        invalidate()
+        targetLevel = newLevel.coerceIn(0f, 1f)
+    }
+
+    private data class Palette(val main: Int, val dim: Int, val accent: Int, val name: String)
+
+    private fun palette(): Palette = when (state) {
+        State.IDLE -> Palette(
+            main = Color.parseColor("#00D4FF"),
+            dim = Color.parseColor("#003355"),
+            accent = Color.parseColor("#007A99"),
+            name = "IDLE"
+        )
+        State.LISTENING -> Palette(
+            main = Color.parseColor("#00E5FF"),
+            dim = Color.parseColor("#005577"),
+            accent = Color.parseColor("#00D4FF"),
+            name = "LISTENING"
+        )
+        State.THINKING -> Palette(
+            main = Color.parseColor("#FFB300"),
+            dim = Color.parseColor("#6B4A00"),
+            accent = Color.parseColor("#E7C368"),
+            name = "THINKING"
+        )
+        State.SPEAKING -> Palette(
+            main = Color.parseColor("#00E676"),
+            dim = Color.parseColor("#00552B"),
+            accent = Color.parseColor("#3DDC84"),
+            name = "SPEAKING"
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val w = width.toFloat()
         val h = height.toFloat()
+        if (w <= 0f || h <= 0f) return
         val cx = w / 2f
-        val cy = h / 2f
-        val baseRadius = min(w, h) / 3f
+        val cy = h / 2f - h * 0.03f
+        val r = min(w, h) / 3.1f
+        val pal = palette()
+        val pulse = 0.5f + 0.5f * sin(Math.toRadians(pulsePhase.toDouble())).toFloat()
 
-        when (state) {
-            State.IDLE -> drawIdle(canvas, cx, cy, baseRadius)
-            State.LISTENING -> drawListening(canvas, cx, cy, baseRadius)
-            State.THINKING -> drawThinking(canvas, cx, cy, baseRadius)
-            State.SPEAKING -> drawSpeaking(canvas, cx, cy, baseRadius)
+        drawTraces(canvas, cx, cy, r, pal)
+        drawOrbitRings(canvas, cx, cy, r, pal)
+        drawParticles(canvas, cx, cy, r, pal)
+        drawWaveformRing(canvas, cx, cy, r, pal, pulse)
+        drawCore(canvas, cx, cy, r, pal, pulse)
+        drawChip(canvas, cx, cy, r, pal)
+    }
+
+    private fun drawTraces(canvas: Canvas, cx: Float, cy: Float, r: Float, pal: Palette) {
+        tracePaint.color = pal.dim
+        tracePaint.alpha = if (state == State.IDLE) 60 else 110
+        tracePaint.strokeWidth = 2f
+        for (t in traces) {
+            val rad = Math.toRadians(t.angle.toDouble())
+            val x0 = cx + cos(rad).toFloat() * r * 0.42f
+            val y0 = cy + sin(rad).toFloat() * r * 0.42f
+            val xm = cx + cos(rad).toFloat() * r * (0.42f + t.lenFrac * 0.35f)
+            val ym = cy + sin(rad).toFloat() * r * (0.42f + t.lenFrac * 0.35f) + t.kink * 0.15f
+            val x1 = cx + cos(rad).toFloat() * r * (0.42f + t.lenFrac)
+            val y1 = cy + sin(rad).toFloat() * r * (0.42f + t.lenFrac) + t.kink * 0.3f
+            canvas.drawLine(x0, y0, xm, ym, tracePaint)
+            canvas.drawLine(xm, ym, x1, y1, tracePaint)
+            // Node dot at the trace end, lit in the active color.
+            dotPaint.color = pal.accent
+            dotPaint.alpha = if (state == State.IDLE) 70 else 160
+            canvas.drawCircle(x1, y1, 3f, dotPaint)
         }
-
-        // Draw chip label
-        canvas.drawText("J.A.R.V.I.S.", cx, cy + baseRadius + 60f, textPaint)
     }
 
-    private fun drawIdle(canvas: Canvas, cx: Float, cy: Float, r: Float) {
-        // Static rings with subtle glow
-        ringPaint.color = Color.parseColor("#003355")
-        ringPaint.alpha = 80
-        canvas.drawCircle(cx, cy, r, ringPaint)
+    private fun drawOrbitRings(canvas: Canvas, cx: Float, cy: Float, r: Float, pal: Palette) {
+        val rect1 = RectF(cx - r * 1.02f, cy - r * 1.02f, cx + r * 1.02f, cy + r * 1.02f)
+        ringPaint.color = pal.main
+        ringPaint.alpha = 130
+        ringPaint.strokeWidth = 3f
+        ringPaint.pathEffect = DashPathEffect(floatArrayOf(26f, 18f), rotatePhase)
+        canvas.drawArc(rect1, 0f, 360f, false, ringPaint)
 
-        ringPaint.color = Color.parseColor("#002244")
-        ringPaint.alpha = 60
-        canvas.drawCircle(cx, cy, r * 0.7f, ringPaint)
-
-        // Solid core
-        corePaint.color = Color.parseColor("#001122")
-        canvas.drawCircle(cx, cy, r * 0.35f, corePaint)
-
-        // Glow dot
-        chipPaint.color = Color.parseColor("#00D4FF")
-        chipPaint.alpha = 100 + (50 * sin(animPhase * 0.05f)).toInt()
-        canvas.drawCircle(cx, cy, r * 0.15f, chipPaint)
-    }
-
-    private fun drawListening(canvas: Canvas, cx: Float, cy: Float, r: Float) {
-        // Pulsing outer rings
-        ringPaint.color = Color.parseColor("#00D4FF")
-        ringPaint.alpha = 120
-        ringPaint.strokeWidth = 6f
-        val pulseR = r + 10f * sin(animPhase * 0.1f)
-        canvas.drawCircle(cx, cy, pulseR, ringPaint)
-
-        ringPaint.alpha = 80
-        canvas.drawCircle(cx, cy, pulseR * 0.8f, ringPaint)
-
-        ringPaint.alpha = 50
-        canvas.drawCircle(cx, cy, pulseR * 0.6f, ringPaint)
-
-        // Core
-        corePaint.color = Color.parseColor("#001a33")
-        canvas.drawCircle(cx, cy, r * 0.4f, corePaint)
-
-        // Mic dot
-        chipPaint.color = Color.parseColor("#00D4FF")
-        chipPaint.alpha = 200
-        canvas.drawCircle(cx, cy, r * 0.12f, chipPaint)
-    }
-
-    private fun drawThinking(canvas: Canvas, cx: Float, cy: Float, r: Float) {
-        // Rotating segmented ring
-        ringPaint.color = Color.parseColor("#FFB300")
-        ringPaint.alpha = 150
-        ringPaint.strokeWidth = 5f
-        val segments = 8
-        for (i in 0 until segments) {
-            val startAngle = animPhase + i * (360f / segments)
-            val sweep = 30f
-            val rect = RectF(cx - r, cy - r, cx + r, cy + r)
-            canvas.drawArc(rect, startAngle, sweep, false, ringPaint)
-        }
-
-        // Pulsing inner ring
-        ringPaint.color = Color.parseColor("#FFB300")
-        ringPaint.alpha = 80
-        val innerR = r * 0.7f + 5f * sin(animPhase * 0.15f)
-        canvas.drawCircle(cx, cy, innerR, ringPaint)
-
-        // Core
-        corePaint.color = Color.parseColor("#1a1100")
-        canvas.drawCircle(cx, cy, r * 0.35f, corePaint)
-
-        // Spinning dot
-        val dotAngle = animPhase * 2f
-        val dotX = cx + r * 0.2f * kotlin.math.cos(Math.toRadians(dotAngle.toDouble())).toFloat()
-        val dotY = cy + r * 0.2f * kotlin.math.sin(Math.toRadians(dotAngle.toDouble())).toFloat()
-        chipPaint.color = Color.parseColor("#FFB300")
-        chipPaint.alpha = 220
-        canvas.drawCircle(dotX, dotY, r * 0.08f, chipPaint)
-    }
-
-    private fun drawSpeaking(canvas: Canvas, cx: Float, cy: Float, r: Float) {
-        // Multiple expanding rings (sound waves)
-        for (i in 0..3) {
-            val phase = (animPhase + i * 90f) % 360f
-            val ringR = r * (0.6f + 0.4f * (phase / 360f))
-            val alpha = (200 * (1f - phase / 360f)).toInt()
-            ringPaint.color = Color.parseColor("#00E676")
-            ringPaint.alpha = alpha
-            ringPaint.strokeWidth = 4f
-            canvas.drawCircle(cx, cy, ringR, ringPaint)
-        }
-
-        // Outer glow ring
-        ringPaint.color = Color.parseColor("#00E676")
+        val rect2 = RectF(cx - r * 0.86f, cy - r * 0.86f, cx + r * 0.86f, cy + r * 0.86f)
+        ringPaint.color = pal.accent
         ringPaint.alpha = 100
-        canvas.drawCircle(cx, cy, r * 1.1f, ringPaint)
+        ringPaint.strokeWidth = 2f
+        ringPaint.pathEffect = DashPathEffect(floatArrayOf(12f, 22f), -rotatePhase * 1.6f)
+        canvas.drawArc(rect2, 0f, 360f, false, ringPaint)
+        ringPaint.pathEffect = null
+    }
 
-        // Core pulses with level
-        val coreR = r * 0.35f * (1f + level * 0.3f)
-        corePaint.color = Color.parseColor("#002211")
-        canvas.drawCircle(cx, cy, coreR, corePaint)
+    private fun drawParticles(canvas: Canvas, cx: Float, cy: Float, r: Float, pal: Palette) {
+        dotPaint.color = pal.main
+        for (p in particles) {
+            val ang = Math.toRadians((rotatePhase * p.dir * p.speed / 30f).toDouble())
+            val or_ = r * p.orbitFrac
+            val x = cx + cos(ang).toFloat() * or_
+            val y = cy + sin(ang).toFloat() * or_
+            dotPaint.alpha = 140
+            canvas.drawCircle(x, y, r * p.sizeFrac, dotPaint)
+        }
+    }
 
-        // Level dot
-        chipPaint.color = Color.parseColor("#00E676")
-        chipPaint.alpha = 200
-        canvas.drawCircle(cx, cy, r * 0.15f * (1f + level * 0.5f), chipPaint)
+    private fun drawWaveformRing(canvas: Canvas, cx: Float, cy: Float, r: Float, pal: Palette, pulse: Float) {
+        val bars = 48
+        barPaint.color = pal.main
+        barPaint.strokeWidth = 5f
+        val baseR = r * 0.60f
+        for (i in 0 until bars) {
+            val ang = Math.toRadians((i * 360f / bars).toDouble())
+            val wave = sin(Math.toRadians((rotatePhase * 2f + i * 360f / bars * 2f).toDouble())).toFloat()
+            val energy = when (state) {
+                State.IDLE -> 0.12f + 0.06f * wave
+                State.LISTENING -> 0.25f + 0.20f * pulse + 0.08f * wave
+                State.THINKING -> 0.30f + 0.15f * sin(Math.toRadians((pulsePhase + i * 15f).toDouble())).toFloat()
+                State.SPEAKING -> 0.25f + smoothLevel * 0.9f * (0.5f + 0.5f * wave)
+            }
+            val len = (r * 0.10f * energy.coerceIn(0.05f, 1.2f)).coerceAtLeast(3f)
+            val x0 = cx + cos(ang).toFloat() * baseR
+            val y0 = cy + sin(ang).toFloat() * baseR
+            val x1 = cx + cos(ang).toFloat() * (baseR + len)
+            val y1 = cy + sin(ang).toFloat() * (baseR + len)
+            barPaint.alpha = (110 + 120 * energy.coerceIn(0f, 1f)).toInt().coerceIn(0, 255)
+            canvas.drawLine(x0, y0, x1, y1, barPaint)
+        }
+    }
+
+    private fun drawCore(canvas: Canvas, cx: Float, cy: Float, r: Float, pal: Palette, pulse: Float) {
+        // Outer glow layers.
+        corePaint.color = pal.main
+        corePaint.alpha = 18
+        canvas.drawCircle(cx, cy, r * 0.52f, corePaint)
+        corePaint.alpha = 30
+        canvas.drawCircle(cx, cy, r * 0.44f, corePaint)
+        // Core body, breathing slightly.
+        val breathe = 1f + 0.04f * pulse + smoothLevel * 0.10f
+        corePaint.color = Color.parseColor("#04121A")
+        corePaint.alpha = 255
+        canvas.drawCircle(cx, cy, r * 0.36f * breathe, corePaint)
+        // Hot center dot.
+        dotPaint.color = pal.main
+        dotPaint.alpha = 220
+        canvas.drawCircle(cx, cy, r * (0.10f + 0.05f * pulse + smoothLevel * 0.06f), dotPaint)
+    }
+
+    private fun drawChip(canvas: Canvas, cx: Float, cy: Float, r: Float, pal: Palette) {
+        val chipW = r * 0.92f
+        val chipH = r * 0.30f
+        val top = cy + r * 1.28f
+        chipPaint.color = Color.parseColor("#0A1418")
+        chipPaint.alpha = 235
+        val rect = RectF(cx - chipW / 2f, top, cx + chipW / 2f, top + chipH)
+        canvas.drawRoundRect(rect, 10f, 10f, chipPaint)
+        ringPaint.color = pal.main
+        ringPaint.alpha = 170
+        ringPaint.strokeWidth = 2f
+        canvas.drawRoundRect(rect, 10f, 10f, ringPaint)
+        labelPaint.color = pal.main
+        labelPaint.alpha = 255
+        labelPaint.textSize = r * 0.13f
+        canvas.drawText("J.A.R.V.I.S.", cx, top + chipH * 0.44f, labelPaint)
+        statePaint.color = pal.accent
+        statePaint.alpha = 220
+        statePaint.textSize = r * 0.095f
+        canvas.drawText("· ${pal.name} ·", cx, top + chipH * 0.74f, statePaint)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        animator?.cancel()
+        rotateAnimator?.cancel()
+        pulseAnimator?.cancel()
     }
 }

@@ -6,7 +6,7 @@
         <EditTextPreference
             app:key="hermes_url"
             app:title="Hermes Endpoint URL"
-            app:defaultValue="http://192.168.1.100:20128/v1/chat/completions"
+            app:defaultValue="http://10.212.104.124:20128/v1/chat/completions"
             app:useSimpleSummaryProvider="true" />
         <EditTextPreference
             app:key="api_key"

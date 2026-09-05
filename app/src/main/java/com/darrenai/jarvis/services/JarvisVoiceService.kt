@@ -1,9 +1,14 @@
 package com.darrenai.jarvis.services
 
 import android.content.Context
-import android.speech.tts.TextToSpeech
-import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -17,20 +22,26 @@ import java.util.UUID
 /**
  * JARVIS Quantum Voice System — 2090 Edition.
  *
- * Jarvis speaks like a real person using paced speech synthesis.
- * Each character/word gets a micro-delay between utterances for natural flow.
+ * Speech-to-text via Android SpeechRecognizer, text-to-speech via
+ * Android TTS with paced, segmented delivery.
  *
- * Personality traits:
- * - Tone: precise, confident, slightly dry wit
- * - Pace: deliberate but not slow
- * - Vocabulary: technical but accessible
+ * Lifecycle rules (all public methods are main-thread safe):
+ * - A fresh SpeechRecognizer is created per listening session and
+ *   destroyed on result/error/stop, so the mic never gets stuck.
+ * - startListening checks recognition availability first and reports
+ *   a clear error instead of going silent.
+ * - TTS completion is tracked with an UtteranceProgressListener so
+ *   [isSpeaking] and [onDone] are always accurate.
  */
-class JarvisVoiceService private constructor(private val context: Context) {
+class JarvisVoiceService private constructor(private val appContext: Context) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val mainHandler = Handler(Looper.getMainLooper())
     private var tts: TextToSpeech? = null
+    private var ttsReady = false
     private var isSpeaking = false
     private var currentJob: Job? = null
+    private var pendingSpeakDone: (() -> Unit)? = null
 
     companion object {
         @Volatile
@@ -46,7 +57,6 @@ class JarvisVoiceService private constructor(private val context: Context) {
         private const val VOICE_PITCH_DEFAULT = 1.0f
         private const val CHARACTER_DELAY_MS = 8L
         private const val WORD_DELAY_MS = 35L
-        private const val PARAGRAPH_DELAY_MS = 300L
 
         // JARVIS personality prompts — injected into offline mode responses
         val PERSONALITY_SYSTEM = """
@@ -78,47 +88,99 @@ class JarvisVoiceService private constructor(private val context: Context) {
     }
 
     private fun initTts() {
-        tts = TextToSpeech(context) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                tts?.language = Locale.US
-                tts?.setSpeechRate(VOICE_SPEED_DEFAULT)
-                tts?.setPitch(VOICE_PITCH_DEFAULT)
+        try {
+            tts = TextToSpeech(appContext) { status ->
+                if (status == TextToSpeech.SUCCESS) {
+                    tts?.language = Locale.US
+                    tts?.setSpeechRate(VOICE_SPEED_DEFAULT)
+                    tts?.setPitch(VOICE_PITCH_DEFAULT)
+                    tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) {}
+                        override fun onError(utteranceId: String?) {
+                            finishSpeaking()
+                        }
+                        override fun onDone(utteranceId: String?) {
+                            finishSpeaking()
+                        }
+                    })
+                    ttsReady = true
+                }
             }
+        } catch (e: Exception) {
+            ttsReady = false
+        }
+    }
+
+    private fun finishSpeaking() {
+        mainHandler.post {
+            isSpeaking = false
+            currentJob?.cancel()
+            currentJob = null
+            val done = pendingSpeakDone
+            pendingSpeakDone = null
+            done?.invoke()
         }
     }
 
     /** Speak text with Jarvis pacing — segment-based natural flow. */
     fun speak(text: String, onDone: () -> Unit = {}) {
-        if (text.isBlank()) { onDone(); return }
-        if (isSpeaking) {
-            stop()
-        }
-
-        isSpeaking = true
-        currentJob = scope.launch {
-            val segments = segmentText(text)
-            for (i in segments.indices) {
-                val segment = segments[i]
-                if (!isSpeaking) break
-
-                val utteranceId = UUID.randomUUID().toString()
-                tts?.speak(segment, TextToSpeech.QUEUE_ADD, null, utteranceId)
-
-                if (i < segments.size - 1) {
-                    delay(calculateInterSegmentDelay(segment))
+        runOnMain {
+            if (text.isBlank()) {
+                onDone()
+                return@runOnMain
+            }
+            if (isSpeaking) stop()
+            if (!ttsReady || tts == null) {
+                // TTS engine unavailable — don't hang the caller.
+                onDone()
+                return@runOnMain
+            }
+            isSpeaking = true
+            pendingSpeakDone = onDone
+            currentJob = scope.launch {
+                val segments = segmentText(text)
+                // Safety timeout: never hold the speaking flag forever.
+                val watchdog = launch {
+                    delay((segments.size * 8000L).coerceAtLeast(15000L))
+                    if (isSpeaking) {
+                        try { tts?.stop() } catch (e: Exception) { }
+                        finishSpeaking()
+                    }
+                }
+                for (i in segments.indices) {
+                    if (!isSpeaking) break
+                    val segment = segments[i]
+                    val utteranceId = UUID.randomUUID().toString()
+                    try {
+                        tts?.speak(segment, TextToSpeech.QUEUE_ADD, null, utteranceId)
+                    } catch (e: Exception) {
+                        break
+                    }
+                    if (i < segments.size - 1) {
+                        delay(calculateInterSegmentDelay(segment))
+                    }
+                }
+                watchdog.cancel()
+                // If TTS callbacks fire, finishSpeaking runs there.
+                // Otherwise fall through after a grace period.
+                delay(1500)
+                if (isSpeaking) {
+                    // TTS likely finished without callbacks on this device.
+                    finishSpeaking()
                 }
             }
-            isSpeaking = false
-            onDone()
         }
     }
 
     /** Stop speaking immediately. */
     fun stop() {
-        isSpeaking = false
-        currentJob?.cancel()
-        currentJob = null
-        tts?.stop()
+        runOnMain {
+            isSpeaking = false
+            currentJob?.cancel()
+            currentJob = null
+            pendingSpeakDone = null
+            try { tts?.stop() } catch (e: Exception) { }
+        }
     }
 
     /** Check if currently speaking. */
@@ -126,15 +188,22 @@ class JarvisVoiceService private constructor(private val context: Context) {
 
     /** Configure voice parameters. */
     fun configure(speed: Float = VOICE_SPEED_DEFAULT, pitch: Float = VOICE_PITCH_DEFAULT) {
-        tts?.setSpeechRate(speed.coerceIn(0.5f, 1.5f))
-        tts?.setPitch(pitch.coerceIn(0.5f, 2.0f))
+        runOnMain {
+            try {
+                tts?.setSpeechRate(speed.coerceIn(0.5f, 1.5f))
+                tts?.setPitch(pitch.coerceIn(0.5f, 2.0f))
+            } catch (e: Exception) { }
+        }
     }
 
     /** Destroy TTS engine. */
     fun shutdown() {
-        stop()
-        tts?.shutdown()
-        tts = null
+        runOnMain {
+            stop()
+            try { tts?.shutdown() } catch (e: Exception) { }
+            tts = null
+            ttsReady = false
+        }
     }
 
     // ---- Internal --------------------------------------------------------
@@ -177,7 +246,12 @@ class JarvisVoiceService private constructor(private val context: Context) {
         }
     }
 
-    // ---- Speech recognition (stub — uses Android SpeechRecognizer) ----
+    private fun runOnMain(block: () -> Unit) {
+        if (Looper.myLooper() == Looper.getMainLooper()) block()
+        else mainHandler.post(block)
+    }
+
+    // ---- Speech recognition ----
 
     /**
      * Callback interface for voice recognition results.
@@ -187,58 +261,115 @@ class JarvisVoiceService private constructor(private val context: Context) {
         fun onVoiceError(error: String)
     }
 
-    private var speechRecognizer: android.speech.SpeechRecognizer? = null
+    private var speechRecognizer: SpeechRecognizer? = null
     private var voiceCallback: VoiceCallback? = null
+    private var listening = false
+
+    fun isRecognitionAvailable(): Boolean {
+        return try {
+            SpeechRecognizer.isRecognitionAvailable(appContext)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun isListening(): Boolean = listening
 
     /**
      * Start listening for voice input. Requires RECORD_AUDIO permission.
+     * Safe to call repeatedly — an in-flight session is restarted cleanly.
      */
     fun startListening(callback: VoiceCallback? = null) {
-        if (callback != null) voiceCallback = callback
-
-        if (speechRecognizer == null) {
-            speechRecognizer = android.speech.SpeechRecognizer.createSpeechRecognizer(context)
-        }
-
-        val intent = android.content.Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, "en-US")
-            putExtra(android.speech.RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-        }
-
-        speechRecognizer?.setRecognitionListener(object : android.speech.RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {}
-            override fun onError(error: Int) {
-                val msg = when (error) {
-                    android.speech.SpeechRecognizer.ERROR_NO_MATCH -> "No speech detected"
-                    android.speech.SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Speech timeout"
-                    else -> "Voice error: $error"
-                }
-                voiceCallback?.onVoiceError(msg)
+        runOnMain {
+            if (callback != null) voiceCallback = callback
+            if (!isRecognitionAvailable()) {
+                voiceCallback?.onVoiceError("Speech recognition not available on this device")
+                return@runOnMain
             }
-            override fun onResults(results: Bundle?) {
-                val matches = results?.getStringArrayList(android.speech.SpeechRecognizer.RESULTS_RECOGNITION)
-                val text = matches?.firstOrNull() ?: ""
-                if (text.isNotEmpty()) {
-                    voiceCallback?.onVoiceResult(text)
-                }
-            }
-            override fun onPartialResults(partialResults: Bundle?) {}
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        })
+            // Tear down any stale session first so the mic never sticks.
+            destroyRecognizer()
+            listening = true
 
-        speechRecognizer?.startListening(intent)
+            val recognizer = try {
+                SpeechRecognizer.createSpeechRecognizer(appContext)
+            } catch (e: Exception) {
+                listening = false
+                voiceCallback?.onVoiceError("Could not start microphone")
+                return@runOnMain
+            }
+            speechRecognizer = recognizer
+
+            recognizer.setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(params: Bundle?) {}
+                override fun onBeginningOfSpeech() {}
+                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onBufferReceived(buffer: ByteArray?) {}
+                override fun onEndOfSpeech() {}
+                override fun onError(error: Int) {
+                    listening = false
+                    val msg = when (error) {
+                        SpeechRecognizer.ERROR_NO_MATCH -> "No speech detected"
+                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Speech timeout"
+                        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Microphone permission denied"
+                        SpeechRecognizer.ERROR_NETWORK -> "Network error — check connection"
+                        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout"
+                        SpeechRecognizer.ERROR_AUDIO -> "Microphone error"
+                        SpeechRecognizer.ERROR_SERVER -> "Recognition server error"
+                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Recognizer busy — try again"
+                        SpeechRecognizer.ERROR_CLIENT -> "Recognition client error"
+                        else -> "Voice error: $error"
+                    }
+                    destroyRecognizer()
+                    voiceCallback?.onVoiceError(msg)
+                }
+                override fun onResults(results: Bundle?) {
+                    listening = false
+                    val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    val text = matches?.firstOrNull()?.trim() ?: ""
+                    destroyRecognizer()
+                    if (text.isNotEmpty()) {
+                        voiceCallback?.onVoiceResult(text)
+                    } else {
+                        voiceCallback?.onVoiceError("No speech detected")
+                    }
+                }
+                override fun onPartialResults(partialResults: Bundle?) {}
+                override fun onEvent(eventType: Int, params: Bundle?) {}
+            })
+
+            val intent = android.content.Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                )
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
+                putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+                putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
+            }
+            try {
+                recognizer.startListening(intent)
+            } catch (e: Exception) {
+                listening = false
+                destroyRecognizer()
+                voiceCallback?.onVoiceError("Could not start microphone")
+            }
+        }
     }
 
     /**
      * Stop listening for voice input.
      */
     fun stopListening() {
-        speechRecognizer?.stopListening()
+        runOnMain {
+            listening = false
+            try { speechRecognizer?.stopListening() } catch (e: Exception) { }
+            destroyRecognizer()
+        }
+    }
+
+    private fun destroyRecognizer() {
+        try { speechRecognizer?.cancel() } catch (e: Exception) { }
+        try { speechRecognizer?.destroy() } catch (e: Exception) { }
+        speechRecognizer = null
     }
 }

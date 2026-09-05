@@ -1,22 +1,29 @@
 package com.darrenai.jarvis.ai
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import com.darrenai.jarvis.model.ChatMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
 /**
  * Hermes OmniRoute provider — connects to the Hermes Agent instance
- * running on Darren's PC via the OmniRoute OpenAI-compatible endpoint.
+ * via the OmniRoute OpenAI-compatible endpoint.
+ *
+ * Self-contained routing: defaults to the PC on the LAN
+ * (http://10.212.104.124:20128). Only internet/LAN access is needed.
+ * Reads the endpoint from the same SharedPreferences file the Settings
+ * screen writes (default shared prefs), with legacy fallback.
  *
  * Also exposes cron job management methods used by the Schedule screen.
  */
 class HermesProvider(private val context: Context) : IProvider {
 
-    private val prefs: SharedPreferences = context
+    private val defaultPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+    private val legacyPrefs = context
         .getSharedPreferences("jarvis_prefs", Context.MODE_PRIVATE)
 
     override val provider: AiProvider get() = AiProvider.Hermes
@@ -24,22 +31,80 @@ class HermesProvider(private val context: Context) : IProvider {
     override val maxTokens: Int = 1024
 
     companion object {
-        private const val DEFAULT_ENDPOINT = "http://10.212.104.124:20128/v1/chat/completions"
+        const val DEFAULT_ENDPOINT = "http://10.212.104.124:20128/v1/chat/completions"
         private const val DEFAULT_API_KEY = ""
-        private const val CRON_ENDPOINT = "http://192.168.1.100:20128/v1/cron"
         const val JARVIS_SYSTEM_PROMPT = """You are JARVIS, Darren Lieu's AI chief of staff.
 You are running on a mobile device connected to Hermes Agent via OmniRoute.
 Be concise, direct, and helpful. Use a calm, professional tone.
 When asked about schedules, system status, or tasks, check available tools.
 Always identify yourself as JARVIS."""
+
+        fun roleName(role: ChatMessage.Role): String = when (role) {
+            ChatMessage.Role.USER -> "user"
+            ChatMessage.Role.ASSISTANT -> "assistant"
+            ChatMessage.Role.SYSTEM -> "system"
+        }
+
+        fun escapeJson(s: String): String {
+            val sb = StringBuilder(s.length + 16)
+            for (c in s) {
+                when (c) {
+                    '\\' -> sb.append("\\\\")
+                    '"' -> sb.append("\\\"")
+                    '\n' -> sb.append("\\n")
+                    '\r' -> sb.append("\\r")
+                    '\t' -> sb.append("\\t")
+                    else -> if (c < ' ') sb.append(String.format("\\u%04x", c.code)) else sb.append(c)
+                }
+            }
+            return sb.toString()
+        }
+
+        /** Extract assistant content from an OpenAI-compatible chat response. */
+        fun parseContent(response: String): String? {
+            return try {
+                val root = JSONObject(response)
+                val choices = root.optJSONArray("choices") ?: return null
+                if (choices.length() == 0) return null
+                val msg = choices.getJSONObject(0).optJSONObject("message") ?: return null
+                val content = msg.optString("content", null)?.takeIf { it.isNotEmpty() }
+                content
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
-    fun getEndpoint(): String = prefs.getString("hermes_url", DEFAULT_ENDPOINT) ?: DEFAULT_ENDPOINT
-    fun getApiKey(): String = prefs.getString("api_key", DEFAULT_API_KEY) ?: DEFAULT_API_KEY
-    fun isOnlineMode(): Boolean = prefs.getBoolean("online_mode", true)
+    fun getEndpoint(): String {
+        val v = defaultPrefs.getString("hermes_url", null)
+            ?: legacyPrefs.getString("hermes_url", null)
+            ?: DEFAULT_ENDPOINT
+        return v.ifBlank { DEFAULT_ENDPOINT }
+    }
+
+    fun getApiKey(): String {
+        val v = defaultPrefs.getString("api_key", null)
+            ?: legacyPrefs.getString("api_key", null)
+            ?: DEFAULT_API_KEY
+        return v
+    }
+
+    fun isOnlineMode(): Boolean = defaultPrefs.getBoolean("online_mode", true)
 
     fun getProviderName(): String {
         return if (isOnlineMode()) "Hermes" else "Offline"
+    }
+
+    private fun cronBase(): String {
+        // Derive cron base from the chat endpoint host, e.g.
+        // http://10.212.104.124:20128/v1/chat/completions -> http://10.212.104.124:20128/v1/cron
+        return try {
+            val u = URL(getEndpoint())
+            val port = if (u.port == -1) "" else ":${u.port}"
+            "${u.protocol}://${u.host}$port/v1/cron"
+        } catch (e: Exception) {
+            "http://10.212.104.124:20128/v1/cron"
+        }
     }
 
     override suspend fun chat(
@@ -71,41 +136,35 @@ Always identify yourself as JARVIS."""
                 // Build request body
                 val messagesJson = buildString {
                     append("[")
-                    append("""{"role":"system","content":"$JARVIS_SYSTEM_PROMPT"}""")
+                    append("{\"role\":\"system\",\"content\":\"${escapeJson(JARVIS_SYSTEM_PROMPT)}\"}")
                     for (msg in messages.takeLast(20)) {
-                        append(""",""")
-                        append("""{"role":""")
-                        append(msg.role)
-                        append("""","content":""")
-                        append(msg.content.replace("\"", "\\\"").replace("\n", "\\n"))
+                        append(",")
+                        append("{\"role\":\"")
+                        append(roleName(msg.role))
+                        append("\",\"content\":\"")
+                        append(escapeJson(msg.content))
                         append("\"}")
                     }
                     append("]")
                 }
 
-                val body = """{"model":"darren-1212","messages":$messagesJson,"stream":false,"max_tokens":$maxTokens}"""
-                conn.outputStream.use { it.write(body.toByteArray()) }
+                val body = "{\"model\":\"darren-1212\",\"messages\":$messagesJson,\"stream\":false,\"max_tokens\":$maxTokens}"
+                conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
 
                 val code = conn.responseCode
                 if (code !in 200..299) {
-                    val err = conn.errorStream?.bufferedReader()?.use { it.readText() } ?: "Unknown"
-                    onEvent(StreamEvent.Error(AiError.ServerError(code, err)))
+                    val err = try {
+                        conn.errorStream?.bufferedReader()?.use { it.readText() } ?: "Unknown"
+                    } catch (e: Exception) {
+                        "Unknown"
+                    }
+                    onEvent(StreamEvent.Error(AiError.ServerError(code, err.take(300))))
                     return@withContext
                 }
 
                 val response = conn.inputStream.bufferedReader().use { it.readText() }
-                // Parse response — simple JSON extraction
-                val contentStart = response.indexOf("\"content\":\"")
-                if (contentStart >= 0) {
-                    val contentStart2 = contentStart + 11
-                    val contentEnd = response.indexOf("\"", contentStart2)
-                    val content = if (contentEnd > contentStart2) {
-                        response.substring(contentStart2, contentEnd)
-                            .replace("\\n", "\n")
-                            .replace("\\\"", "\"")
-                            .replace("\\\\", "\\")
-                    } else response
-
+                val content = parseContent(response)
+                if (content != null) {
                     onEvent(StreamEvent.Delta(content))
                     onEvent(StreamEvent.Done(content))
                 } else {
@@ -146,7 +205,7 @@ Always identify yourself as JARVIS."""
     // ---- Cron management methods (used by ScheduleFragment) ----
 
     fun fetchCronJobs(): String {
-        val url = URL(CRON_ENDPOINT)
+        val url = URL(cronBase())
         val conn = (url.openConnection() as HttpURLConnection).apply {
             requestMethod = "GET"
             connectTimeout = 5000
@@ -164,7 +223,7 @@ Always identify yourself as JARVIS."""
     }
 
     fun triggerCronJob(jobId: String): String {
-        val url = URL("$CRON_ENDPOINT/$jobId/run")
+        val url = URL("${cronBase()}/$jobId/run")
         val conn = (url.openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             connectTimeout = 5000
@@ -186,7 +245,7 @@ Always identify yourself as JARVIS."""
 
     fun toggleCronJob(jobId: String, pause: Boolean): String {
         val action = if (pause) "pause" else "resume"
-        val url = URL("$CRON_ENDPOINT/$jobId/$action")
+        val url = URL("${cronBase()}/$jobId/$action")
         val conn = (url.openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             connectTimeout = 5000

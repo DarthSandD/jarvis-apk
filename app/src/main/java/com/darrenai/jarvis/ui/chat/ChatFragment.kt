@@ -33,39 +33,50 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        aiService = AiService.getInstance(requireContext())
+        try {
+            aiService = AiService.getInstance(requireContext())
 
-        // Setup agent selector chips
-        setupAgentChips(view)
+            // Setup agent selector chips
+            setupAgentChips(view)
 
-        // Setup RecyclerView
-        chatAdapter = ChatAdapter(messages)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_chat)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
-            stackFromEnd = true
-        }
-        recyclerView.adapter = chatAdapter
-
-        // Empty state
-        updateEmptyState(view)
-
-        // Input bar
-        val editMessage = view.findViewById<android.widget.EditText>(R.id.edit_message)
-        val btnSend = view.findViewById<ImageButton>(R.id.btn_send)
-
-        btnSend.setOnClickListener {
-            val text = editMessage.text.toString().trim()
-            if (text.isNotEmpty()) {
-                sendMessage(view, text)
-                editMessage.text.clear()
+            // Setup RecyclerView
+            chatAdapter = ChatAdapter(messages)
+            val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_chat)
+            recyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
+                stackFromEnd = true
             }
-        }
+            recyclerView.adapter = chatAdapter
 
-        // Voice button — navigate to voice tab
-        view.findViewById<ImageButton>(R.id.btn_voice).setOnClickListener {
-            (activity as? androidx.appcompat.app.AppCompatActivity)?.let { app ->
-                val bottomNav = app.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
-                bottomNav.selectedItemId = R.id.nav_voice
+            // Empty state
+            updateEmptyState(view)
+
+            // Input bar
+            val editMessage = view.findViewById<android.widget.EditText>(R.id.edit_message)
+            val btnSend = view.findViewById<ImageButton>(R.id.btn_send)
+
+            btnSend.setOnClickListener {
+                val text = editMessage.text.toString().trim()
+                if (text.isNotEmpty()) {
+                    sendMessage(view, text)
+                    editMessage.text.clear()
+                }
+            }
+
+            // Voice button — navigate to voice tab
+            view.findViewById<ImageButton>(R.id.btn_voice).setOnClickListener {
+                (activity as? androidx.appcompat.app.AppCompatActivity)?.let { app ->
+                    val bottomNav = app.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
+                    bottomNav.selectedItemId = R.id.nav_voice
+                }
+            }
+        } catch (e: Exception) {
+            // Never crash the tab — surface the error in the empty state.
+            runCatching {
+                view.findViewById<View>(R.id.empty_state)?.visibility = View.VISIBLE
+                view.findViewById<android.widget.TextView>(R.id.txt_chat_error)?.apply {
+                    text = "Couldn't start chat: ${e.message}"
+                    visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -89,7 +100,7 @@ class ChatFragment : Fragment() {
     private fun sendMessage(view: View, text: String) {
         // Add user message
         messages.add(ChatMessage(text, true))
-        chatAdapter.notifyItemInserted(messages.size - 1)
+        runCatching { chatAdapter.notifyItemInserted(messages.size - 1) }
         updateEmptyState(view)
         scrollToBottom(view)
 
@@ -103,6 +114,7 @@ class ChatFragment : Fragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch {
             aiService.chat(history, null) { event ->
+                if (!isAdded) return@chat
                 when (event) {
                     is com.darrenai.jarvis.ai.StreamEvent.Delta -> {
                         // Update or append the assistant message
@@ -111,10 +123,10 @@ class ChatFragment : Fragment() {
                             messages[lastIdx] = ChatMessage(
                                 messages[lastIdx].text + event.text, false
                             )
-                            chatAdapter.notifyItemChanged(lastIdx)
+                            runCatching { chatAdapter.notifyItemChanged(lastIdx) }
                         } else {
                             messages.add(ChatMessage(event.text, false))
-                            chatAdapter.notifyItemInserted(messages.size - 1)
+                            runCatching { chatAdapter.notifyItemInserted(messages.size - 1) }
                         }
                         scrollToBottom(view)
                     }
@@ -123,7 +135,7 @@ class ChatFragment : Fragment() {
                     }
                     is com.darrenai.jarvis.ai.StreamEvent.Error -> {
                         messages.add(ChatMessage("⚠️ ${event.error.message}", false))
-                        chatAdapter.notifyItemInserted(messages.size - 1)
+                        runCatching { chatAdapter.notifyItemInserted(messages.size - 1) }
                         scrollToBottom(view)
                     }
                     else -> {}
@@ -133,12 +145,17 @@ class ChatFragment : Fragment() {
     }
 
     private fun updateEmptyState(view: View) {
-        val emptyState = view.findViewById<View>(R.id.empty_state)
-        emptyState.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
+        runCatching {
+            val emptyState = view.findViewById<View>(R.id.empty_state)
+            emptyState.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
+        }
     }
 
     private fun scrollToBottom(view: View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_chat)
-        recyclerView.scrollToPosition(messages.size - 1)
+        if (messages.isEmpty()) return
+        runCatching {
+            val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_chat)
+            recyclerView.scrollToPosition(messages.size - 1)
+        }
     }
 }
