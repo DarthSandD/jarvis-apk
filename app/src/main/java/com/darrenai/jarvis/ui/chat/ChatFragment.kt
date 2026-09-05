@@ -13,7 +13,6 @@ import com.darrenai.jarvis.R
 import com.darrenai.jarvis.ai.AiService
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment() {
@@ -47,24 +46,18 @@ class ChatFragment : Fragment() {
         }
         recyclerView.adapter = chatAdapter
 
-        // Check for pre-filled prompt from dashboard (Safe Args may not be present)
-        val args = try { ChatFragmentArgs.fromBundle(requireArguments()) } catch (e: Exception) { null }
-        if (args != null && args.prompt.isNotEmpty()) {
-            sendMessage(view, args.prompt)
-        }
-
         // Empty state
         updateEmptyState(view)
 
         // Input bar
-        val editMessage = view.findViewById<TextInputEditText>(R.id.edit_message)
+        val editMessage = view.findViewById<android.widget.EditText>(R.id.edit_message)
         val btnSend = view.findViewById<ImageButton>(R.id.btn_send)
 
         btnSend.setOnClickListener {
             val text = editMessage.text.toString().trim()
             if (text.isNotEmpty()) {
                 sendMessage(view, text)
-                editMessage.text?.clear()
+                editMessage.text.clear()
             }
         }
 
@@ -148,5 +141,4 @@ class ChatFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_chat)
         recyclerView.scrollToPosition(messages.size - 1)
     }
-
 }
